@@ -48,11 +48,11 @@ struct _OnsenArchivePlugin_s
     void *pLibrary;                         /* Plugin library handle.         */
     const char *szLibraryError;             /* Plugin library last error.     */
 
-    char *szExtensions;                     /* Plugin recognized extensions.  */
     char *szIDS;                            /* Plugin Identification String.  */
     char *szName;                           /* Plugin name.                   */
-    char *szAuthors;                        /* Plugin authors.                */
     char *szVersion;                        /* Plugin version.                */
+    char *szExtensions;                     /* Plugin recognized extensions.  */
+    char *szAuthors;                        /* Plugin authors.                */
 
     int bArchiveOpened;                     /* Is archive file opened?        */
     FILE *pArchiveFile;                     /* Opened archive file handle.    */
