@@ -8,6 +8,9 @@
 #define ONSEN_PLUGIN_NAME_SIZE 65
 #define ONSEN_PLUGIN_VERSION_SIZE 65
 #define ONSEN_PLUGIN_AUTHORS_SIZE 65
+#define ONSEN_DISK_FILE 0
+#define ONSEN_MEMORY_FILE 1
+
 
 #include "utils.h"
 #include <dlfcn.h>
@@ -18,7 +21,7 @@ struct _OnsenPlugin_s
 {
     int bLibraryloaded;                     /* Is plugin library loaded?      */
     void *pLibrary;                         /* Plugin library handle.         */
-    const char *szLibraryError;             /* Plugin library last error.     */
+    char *szLibraryError;             /* Plugin library last error.     */
 
     int iType;                              /* Plugin type.                   */
     char *szName;                           /* Plugin name.                   */
@@ -27,6 +30,7 @@ struct _OnsenPlugin_s
 
     void *pInstance;
     int (*getPluginInfos)(int, char *, int);
+    int (*isFileSupported)(const char *, int, void *);
 };
 
 OnsenPlugin_t *onsen_new_plugin(void);

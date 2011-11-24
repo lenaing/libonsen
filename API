@@ -1,0 +1,77 @@
+Plugin API
+==========
+
+Any Plugin
+----------
+
+    Any plugin *must* implement the following mandatory functions :
+
+    1 - onsen_get_plugin_infos
+    2 - onsen_is_file_supported
+
++ onsen_get_plugin_infos :
+
+    Prototype : int (*)(int iInfoID, char *szBuffer, int iBufferLen)
+
+    -----------------------------------------------------------------
+    | Arguments     | Description                                   |
+    -----------------------------------------------------------------
+    | iInfoID       | Information ID    Meaning                     |
+    |               |   0               Plugin metadata             |
+    |               |   1               Plugin name                 |
+    |               |   2               Plugin version              |
+    |               |   3               Plugin authors              |
+    | szBuffer      | Buffer to fill the info with                  |
+    | iBufferLen    | Buffer length (bytes)                         |
+    -----------------------------------------------------------------
+
+    Return value :
+        - Number of characters written to the buffer.
+        - 0 if information ID is incorrect.
+
+    Comments :
+        - The plugin metadata is a 3 bytes array that must be read to ensure
+          that the plugin use the correct *libonsen* API and the plugin type
+          is supported.
+
+          Here is an exemple : 01 A
+                                | +--- A : Archive plugin
+                                +------*libonsen* API version no. (MAJOR, MINOR)
+
++ onsen_is_file_supported :
+
+    Prototype : int (*)(char *szFilename, int iFileType, void *pFile)
+
+    -----------------------------------------------------------------
+    | Arguments     | Description                                   |
+    -----------------------------------------------------------------
+    | szFilename    | Full path filename                            |
+    | iFileType     | File type         Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    | pFile         | File type         Meaning                     |
+    |               |   0               File handle                 |
+    |               |   1               Memory File handle          |
+    -----------------------------------------------------------------
+
+    Return value :
+        - 0 if file is supported by the plugin.
+        - !0 file is not supported.
+
+    Comments :
+        - Each plugin examine the header of the file passed to quickly
+          determine if the file format is supported by the plugin.
+          In rare cases the filename or the extensions are required for
+          support determination. That is why the filename is passed to
+          this function.
+
+Archive Plugin
+--------------
+
+TODO
+
+    Any ARCHIVE plugin *must* implement the following functions :
+
+    - onsen_get_archive_info
+    - onsen_get_archive_file_info
+    - onsen_write_archive_file

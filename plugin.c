@@ -19,6 +19,7 @@ onsen_new_plugin()
     pPlugin->szAuthors = NULL;
 
     pPlugin->pInstance = NULL;
+
     return pPlugin;
 }
 
@@ -37,13 +38,14 @@ onsen_free_plugin(OnsenPlugin_t *pPlugin)
             onsen_free(pPlugin->szAuthors);
         }
 
-        if (pPlugin->pLibrary != NULL) {
+        if (NULL != pPlugin->pLibrary) {
             dlclose(pPlugin->pLibrary);
         }
 
-        if (NULL != pPlugin->pInstance) {
+        if (NULL != pPlugin->pInstance && pPlugin->bLibraryloaded) {
             onsen_free_plugin_instance(pPlugin);
         }
+
         onsen_free(pPlugin);
     }
 }
@@ -118,7 +120,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     } else {
         onsen_err_ko("Unable to retrieve plugin infos from library '%s'.",
                      szLibFilename);
-        return 1;
+        return 5;
     }
 
     /* Try to load generic plugin informations */
@@ -129,6 +131,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                            szLibFilename);
         sprintf(szPluginName, "%s", "Unknown plugin");
     }
+    pPlugin->szName = szPluginName;
 
     szPluginVersion = onsen_calloc(sizeof(char), ONSEN_PLUGIN_VERSION_SIZE);
     rc = pPlugin->getPluginInfos(2, szPluginVersion, ONSEN_PLUGIN_VERSION_SIZE);
@@ -137,6 +140,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                            szLibFilename);
         szPluginVersion[0] = '\0';
     }
+    pPlugin->szVersion = szPluginVersion;
 
     szPluginAuthors = onsen_calloc(sizeof(char), ONSEN_PLUGIN_AUTHORS_SIZE);
     rc = pPlugin->getPluginInfos(3, szPluginAuthors, ONSEN_PLUGIN_AUTHORS_SIZE);
@@ -145,26 +149,33 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                            szLibFilename);
         szPluginAuthors[0] = '\0';
     }
+    pPlugin->szAuthors = szPluginAuthors;
+
+    /* Load plugin onsen_is_file_supported function. */
+    pFun = dlsym(pPlugin->pLibrary, "onsen_is_file_supported");
+    pPlugin->szLibraryError = dlerror();
+    if (NULL != pPlugin->szLibraryError) {
+        onsen_err_ko("Failed to get plugin %s file support function.",
+                     pPlugin->szName);
+        return 6;
+    }
+    memcpy(&(pPlugin->isFileSupported), &pFun, sizeof(pPlugin->isFileSupported));
 
     /* Create instance of plugin */
     rc = onsen_new_plugin_instance(pPlugin);
     if (rc != 0) {
         /* Failed to instanciate plugin instance */
-        onsen_err_ko("Failed to load plugin '%s' functions from library.",
+        onsen_err_ko("Failed to load plugin %s functions from library.",
                      szPluginName);
         rc = dlclose(pPlugin->pLibrary);
         if (rc != 0) {
             onsen_err_ko("Failed to close library '%s'.", szLibFilename);
         }
-        onsen_free(szPluginName);
+        /*onsen_free(szPluginName);
         onsen_free(szPluginVersion);
-        onsen_free(szPluginAuthors);
-        return 1;
+        onsen_free(szPluginAuthors);*/
+        return 7;
     }
-
-    pPlugin->szName = szPluginName;
-    pPlugin->szVersion = szPluginVersion;
-    pPlugin->szAuthors = szPluginAuthors;
 
     onsen_out_ok("Loaded plugin %s %s%s.", pPlugin->szName, pPlugin->szVersion, pPlugin->szAuthors);
     pPlugin->bLibraryloaded = 1;
