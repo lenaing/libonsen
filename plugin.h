@@ -6,8 +6,8 @@
 #define ONSEN_API_MAJOR '0'
 #define ONSEN_API_MINOR '1'
 #define ONSEN_PLUGIN_NAME_SIZE 64
-#define ONSEN_PLUGIN_VERSION_SIZE 65
-#define ONSEN_PLUGIN_AUTHORS_SIZE 65
+#define ONSEN_PLUGIN_VERSION_SIZE 64
+#define ONSEN_PLUGIN_AUTHORS_SIZE 64
 
 #include "utils.h"
 #include <dlfcn.h>
