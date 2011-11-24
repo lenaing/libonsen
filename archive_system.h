@@ -33,9 +33,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#ifndef __ONSEN_ARCHIVE_H
-#define __ONSEN_ARCHIVE_H
+#ifndef __ONSEN_ARCHIVE_SYSTEM_H
+#define __ONSEN_ARCHIVE_SYSTEM_H
 
+#include "plugin.h"
 #include "string_utils.h"
 #include "file_utils.h"
 
@@ -44,16 +45,6 @@ typedef struct _OnsenArchiveEntry_s OnsenArchiveEntry_t;
 
 struct _OnsenArchivePlugin_s
 {
-    int bLibraryloaded;                     /* Is plugin library loaded?      */
-    void *pLibrary;                         /* Plugin library handle.         */
-    const char *szLibraryError;             /* Plugin library last error.     */
-
-    char *szIDS;                            /* Plugin Identification String.  */
-    char *szName;                           /* Plugin name.                   */
-    char *szVersion;                        /* Plugin version.                */
-    char *szExtensions;                     /* Plugin recognized extensions.  */
-    char *szAuthors;                        /* Plugin authors.                */
-
     int bArchiveOpened;                     /* Is archive file opened?        */
     FILE *pArchiveFile;                     /* Opened archive file handle.    */
     long lArchiveFileSize;                  /* Archive file size.             */
@@ -64,27 +55,12 @@ struct _OnsenArchivePlugin_s
     int (*openArchive)(OnsenArchivePlugin_t *, FILE *);
     /* Close archive function.       */
     void (*closeArchive)(OnsenArchivePlugin_t *);
-    /* Load archive infos function.  */
-    void (*loadArchiveInfos)(OnsenArchivePlugin_t *); 
 
     /* Optional functions. */
-    /* Load archive infos function.  */
     int (*extractAllArchive)(OnsenArchivePlugin_t *, const char*);
     int (*extractFromArchive)(OnsenArchivePlugin_t *, const char*, int); 
 };
 
-struct _OnsenArchiveEntry_s
-{
-    char *szFilename;                       /* Entry filename.                */
-    int iOffset;                            /* Entry file offset in archive.  */
-    int iSize;                              /* Entry full file size.          */
-    int iCompressedSize;                    /* Entry compressed file size.    */
-    int bEncrypted;                         /* Is file encrypted?             */
-    int bCompressed;                        /* Is file compressed?            */
-    char **a_szAddlFds;                     /* Additional fields.             */
-    int iAddlFdsCount;                      /* Additional fields count.       */
-};
-
 int onsen_dump_archive_raw(OnsenArchivePlugin_t *, const char *);
 int onsen_dump_archive_entry_raw(OnsenArchivePlugin_t *, const char *, int);
-#endif /* __ONSEN_ARCHIVE_H */
+#endif /* __ONSEN_ARCHIVE_SYSTEM_H */

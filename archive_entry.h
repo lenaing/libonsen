@@ -36,9 +36,22 @@
 #ifndef __ONSEN_ARCHIVE_ENTRY_H
 #define __ONSEN_ARCHIVE_ENTRY_H
 
-#include "archive.h"
+#include "archive_system.h"
+#include "string_utils.h"
+#include "file_utils.h"
+
+struct _OnsenArchiveEntry_s
+{
+    char *szFilename;                       /* Entry filename.                */
+    int iOffset;                            /* Entry file offset in archive.  */
+    int iSize;                              /* Entry full file size.          */
+    int iCompressedSize;                    /* Entry compressed file size.    */
+    int bEncrypted;                         /* Is file encrypted?             */
+    int bCompressed;                        /* Is file compressed?            */
+    char **a_szAddlFds;                     /* Additional fields.             */
+    int iAddlFdsCount;                      /* Additional fields count.       */
+};
 
 OnsenArchiveEntry_t *onsen_new_archive_entry();
 void onsen_free_archive_entry(OnsenArchiveEntry_t *);
-
 #endif /* __ONSEN_ARCHIVE_ENTRY_H */

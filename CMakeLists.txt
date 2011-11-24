@@ -47,10 +47,10 @@ SET(
         archive_plugin.c
         file_utils.c
         iconv_utils.c
+        plugin.c
         shift_jis_utils.c
         string_utils.c
         utils.c
-        utils.h
 )
 
 SET(ONSEN_VERSION_MAJOR 0)

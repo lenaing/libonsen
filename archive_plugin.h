@@ -36,15 +36,16 @@
 #ifndef __ONSEN_ARCHIVE_PLUGIN_H
 #define __ONSEN_ARCHIVE_PLUGIN_H
 
-#include "archive.h"
-#include <dlfcn.h>
+#include "archive_system.h"
 
 OnsenArchivePlugin_t *onsen_new_archive_plugin(void);
 void onsen_free_archive_plugin(OnsenArchivePlugin_t *);
 
 int onsen_load_archive_plugin(OnsenArchivePlugin_t *, const char *);
 int onsen_unload_archive_plugin(OnsenArchivePlugin_t *);
-int onsen_archive_plugin_load_funcs(OnsenArchivePlugin_t *);
-int onsen_archive_plugin_load_infos(OnsenArchivePlugin_t *);
+int onsen_archive_plugin_load_funcs(OnsenPlugin_t *);
+
+int onsen_dump_archive_raw(OnsenArchivePlugin_t *, const char *);
+int onsen_dump_archive_entry_raw(OnsenArchivePlugin_t *, const char *, int);
 
 #endif /* __ONSEN_ARCHIVE_PLUGIN_H */
