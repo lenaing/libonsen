@@ -41,7 +41,7 @@
 #include "file_utils.h"
 #include "plugin.h"
 
-typedef void (*writecallback)(int , int , void *);
+typedef void (*OnsenWriteFileCallback)(int , int , void *);
 
 typedef struct _OnsenArchivePlugin_s OnsenArchivePlugin_t;
 struct _OnsenArchivePlugin_s
@@ -51,7 +51,8 @@ struct _OnsenArchivePlugin_s
     int (*getFileInfo)(void *, long, char *, int, OnsenArchiveEntry_t *);
 
     /* Optional archive functions.        */
-    int (*writeFile)(void *, int, long, int, void *, int, writecallback, void *);
+    int (*writeFile)(void *, int, long, int, void *, int,
+                     OnsenWriteFileCallback, void *);
 };
 
 OnsenArchivePlugin_t *onsen_new_archive_plugin(void);
@@ -61,6 +62,7 @@ int onsen_load_archive_plugin(OnsenArchivePlugin_t *, const char *);
 int onsen_unload_archive_plugin(OnsenArchivePlugin_t *);
 int onsen_archive_plugin_load_funcs(OnsenPlugin_t *);
 
-int onsen_write_file_raw(void *, int, long, int, void *, int, writecallback, void *);
+int onsen_write_file_raw(void *, int, long, int, void *, int,
+                         OnsenWriteFileCallback, void *);
 
 #endif /* __ONSEN_ARCHIVE_PLUGIN_H */

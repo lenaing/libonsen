@@ -59,7 +59,6 @@ onsen_free_archive_entry(OnsenArchiveEntry_t *pEntry)
     int i;
 
     if (NULL != pEntry) {
-
         if (NULL != pEntry->szFilename) {
             onsen_free(pEntry->szFilename);
         }
@@ -70,10 +69,10 @@ onsen_free_archive_entry(OnsenArchiveEntry_t *pEntry)
                     onsen_free(pEntry->a_szAddlFds[i]);
                 }
             }
+
             onsen_free(pEntry->a_szAddlFds);
         }
 
         onsen_free(pEntry);
-
     }
 }

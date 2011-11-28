@@ -43,7 +43,8 @@ onsen_new_archive_plugin()
     OnsenArchivePlugin_t *pPlugin;
 
     pPlugin = onsen_malloc(sizeof(OnsenArchivePlugin_t));
-
+    pPlugin->getArchiveInfo = NULL;
+    pPlugin->getFileInfo = NULL;
     pPlugin->writeFile = &onsen_write_file_raw;
 
     return pPlugin;
@@ -53,7 +54,6 @@ void
 onsen_free_archive_plugin(OnsenArchivePlugin_t *pPlugin)
 {
     if (NULL != pPlugin) {
-        /* TODO : UNLOAD should be done by the plugin, but double check here. */
         onsen_free(pPlugin);
     }
 }
@@ -64,7 +64,6 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
     void *pFun;
     OnsenArchivePlugin_t *pInstance;
 
-
     assert(NULL != pPlugin);
 
     /* Library already loaded. */
@@ -74,22 +73,22 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
     }
 
     pInstance = pPlugin->pInstance;
+    if (NULL == pInstance) {
+        return 1;
+    }
 
     pFun = dlsym(pPlugin->pLibrary, "onsen_get_archive_info");
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
-        onsen_err_ko("^#~{@^~# : %s", pPlugin->szLibraryError);
-        return 1;
+        return 2;
     }
-    if (NULL == pInstance) {
-        onsen_err_ko("arch");
-    }
-    memcpy(&(pInstance->getArchiveInfo), &pFun, sizeof(pInstance->getArchiveInfo));
+    memcpy(&(pInstance->getArchiveInfo), &pFun,
+                sizeof(pInstance->getArchiveInfo));
 
     pFun = dlsym(pPlugin->pLibrary, "onsen_get_file_info");
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
-        return 1;
+        return 3;
     }
     memcpy(&(pInstance->getFileInfo), &pFun, sizeof(pInstance->getFileInfo));
 
@@ -106,7 +105,7 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
 int
 onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
                      int iSrcSize, void *szDstFile, int iDstType,
-                     writecallback pCallback, void *pData)
+                     OnsenWriteFileCallback pCallback, void *pData)
 {
     FILE *pSrcFile;
     FILE *pDstFile;
@@ -117,7 +116,6 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
     int iRemaining = 0;
     int rc = 0;
 
-
     if (0 == iSrcType) {
         /* Disk file */
         pSrcFile = onsen_open_file((char *)szSrcFile, "rb");
@@ -126,7 +124,6 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
         /* Memory file */
         /* TODO */
     }
-
 
     if (0 == iDstType) {
         /* Disk file */
@@ -159,14 +156,15 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
             }
         }
 
-        
+        onsen_close_file(pDstFile);
     } else {
         rc = 1;
     }
 
-    onsen_close_file(pDstFile);
-    onsen_close_file(pSrcFile);
     onsen_free(aBuffer);
+    if (NULL != pSrcFile) {
+        onsen_close_file(pSrcFile);
+    }
 
     return rc;
 }
