@@ -33,34 +33,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#ifndef __ONSEN_ARCHIVE_SYSTEM_H
-#define __ONSEN_ARCHIVE_SYSTEM_H
+#ifndef __ONSEN_ARCHIVE_INFO_H
+#define __ONSEN_ARCHIVE_INFO_H
 
-#include "plugin.h"
-#include "string_utils.h"
-#include "file_utils.h"
+#include "archive_entry.h"
 
-typedef struct _OnsenArchivePlugin_s OnsenArchivePlugin_t;
-typedef struct _OnsenArchiveEntry_s OnsenArchiveEntry_t;
-
-struct _OnsenArchivePlugin_s
+typedef struct _OnsenArchiveInfo_s OnsenArchiveInfo_t;
+struct _OnsenArchiveInfo_s
 {
-    int bArchiveOpened;                     /* Is archive file opened?        */
-    FILE *pArchiveFile;                     /* Opened archive file handle.    */
     long lArchiveFileSize;                  /* Archive file size.             */
     OnsenArchiveEntry_t **a_pArchiveEntries;/* Archive file entries.          */
     int iArchiveEntriesCount;               /* Archive file entries count.    */
-
-    /* Open archive function.        */
-    int (*openArchive)(OnsenArchivePlugin_t *, FILE *);
-    /* Close archive function.       */
-    void (*closeArchive)(OnsenArchivePlugin_t *);
-
-    /* Optional functions. */
-    int (*extractAllArchive)(OnsenArchivePlugin_t *, const char*);
-    int (*extractFromArchive)(OnsenArchivePlugin_t *, const char*, int); 
 };
 
-int onsen_dump_archive_raw(OnsenArchivePlugin_t *, const char *);
-int onsen_dump_archive_entry_raw(OnsenArchivePlugin_t *, const char *, int);
-#endif /* __ONSEN_ARCHIVE_SYSTEM_H */
+OnsenArchiveInfo_t *onsen_new_archive_info(void);
+void onsen_free_archive_info(OnsenArchiveInfo_t *);
+
+#endif /* __ONSEN_ARCHIVE_INFO_H */

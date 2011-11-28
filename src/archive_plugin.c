@@ -35,6 +35,8 @@
  */
 #include "archive_plugin.h"
 
+#define BUFFER_SIZE 1024
+
 OnsenArchivePlugin_t *
 onsen_new_archive_plugin()
 {
@@ -42,16 +44,7 @@ onsen_new_archive_plugin()
 
     pPlugin = onsen_malloc(sizeof(OnsenArchivePlugin_t));
 
-    pPlugin->bArchiveOpened = 0;
-    pPlugin->pArchiveFile = NULL;
-    pPlugin->lArchiveFileSize = 0;
-    pPlugin->a_pArchiveEntries = NULL;
-    pPlugin->iArchiveEntriesCount = 0;
-
-    pPlugin->openArchive = NULL;
-    pPlugin->closeArchive = NULL;
-    pPlugin->extractAllArchive = &onsen_dump_archive_raw;
-    pPlugin->extractFromArchive = &onsen_dump_archive_entry_raw;
+    pPlugin->writeFile = &onsen_write_file_raw;
 
     return pPlugin;
 }
@@ -82,9 +75,7 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
 
     pInstance = pPlugin->pInstance;
 
-    onsen_err_ko("Trying functions : onsen_open_archive...");
-
-    pFun = dlsym(pPlugin->pLibrary, "onsen_open_archive");
+    pFun = dlsym(pPlugin->pLibrary, "onsen_get_archive_info");
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("^#~{@^~# : %s", pPlugin->szLibraryError);
@@ -93,31 +84,88 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
     if (NULL == pInstance) {
         onsen_err_ko("arch");
     }
-    memcpy(&(pInstance->openArchive), &pFun, sizeof(pInstance->openArchive));
+    memcpy(&(pInstance->getArchiveInfo), &pFun, sizeof(pInstance->getArchiveInfo));
 
-    onsen_err_ko("Trying functions : onsen_close_archive...");
-    pFun = dlsym(pPlugin->pLibrary, "onsen_close_archive");
+    pFun = dlsym(pPlugin->pLibrary, "onsen_get_file_info");
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
         return 1;
     }
-    memcpy(&(pInstance->closeArchive), &pFun, sizeof(pInstance->closeArchive));
+    memcpy(&(pInstance->getFileInfo), &pFun, sizeof(pInstance->getFileInfo));
 
     /* Optional functions */
-    onsen_err_ko("Trying functions : onsen_extract_all_archive...");
-    pFun = dlsym(pPlugin->pLibrary, "onsen_extract_all_archive");
+    pFun = dlsym(pPlugin->pLibrary, "onsen_write_file");
     pPlugin->szLibraryError = dlerror();
     if (NULL == pPlugin->szLibraryError) {
-        memcpy(&(pInstance->extractAllArchive), &pFun, sizeof(pInstance->extractAllArchive));
-    }
-
-    onsen_err_ko("Trying functions : onsen_extract_from_archive...");
-    pFun = dlsym(pPlugin->pLibrary, "onsen_extract_from_archive");
-    pPlugin->szLibraryError = dlerror();
-    if (NULL == pPlugin->szLibraryError) {
-        memcpy(&(pInstance->extractFromArchive), &pFun, sizeof(pInstance->extractFromArchive));
+        memcpy(&(pInstance->writeFile), &pFun, sizeof(pInstance->writeFile));
     }
 
     return 0;
 }
 
+int
+onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
+                     int iSrcSize, void *szDstFile, int iDstType,
+                     writecallback pCallback, void *pData)
+{
+    FILE *pSrcFile;
+    FILE *pDstFile;
+
+    unsigned char *aBuffer;
+    int iToRead = 0;
+    int iCount = 0;
+    int iRemaining = 0;
+    int rc = 0;
+
+
+    if (0 == iSrcType) {
+        /* Disk file */
+        pSrcFile = onsen_open_file((char *)szSrcFile, "rb");
+        aBuffer = onsen_calloc(sizeof(char), BUFFER_SIZE);
+    } else {
+        /* Memory file */
+        /* TODO */
+    }
+
+
+    if (0 == iDstType) {
+        /* Disk file */
+        pDstFile = onsen_open_file((char *)szDstFile, "wb");
+        
+    } else {
+        /* Memory file */
+        /* TODO */
+    }
+
+    if (NULL != pDstFile) {
+        onsen_file_goto(pSrcFile, lSrcOffset);
+        if (iSrcSize < BUFFER_SIZE) {
+            fread(aBuffer, iSrcSize, 1, pSrcFile);
+            fwrite(aBuffer, iSrcSize, 1, pDstFile);
+        } else {
+            while (iCount < iSrcSize) {
+                iRemaining = iSrcSize - iCount;
+                if (iRemaining < BUFFER_SIZE) {
+                    iToRead = iRemaining;
+                } else {
+                    iToRead = BUFFER_SIZE;
+                }
+                fread(aBuffer, iToRead, 1, pSrcFile);
+                fwrite(aBuffer, iToRead, 1, pDstFile);
+                iCount += BUFFER_SIZE;
+                onsen_out_ok("%d, %d :", iSrcSize, iCount);
+                pCallback(iSrcSize, iCount, pData);
+            }
+        }
+
+        
+    } else {
+        rc = 1;
+    }
+
+    onsen_close_file(pDstFile);
+    onsen_close_file(pSrcFile);
+    onsen_free(aBuffer);
+
+    return rc;
+}

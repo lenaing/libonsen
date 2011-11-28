@@ -36,10 +36,9 @@
 #ifndef __ONSEN_ARCHIVE_ENTRY_H
 #define __ONSEN_ARCHIVE_ENTRY_H
 
-#include "archive_system.h"
-#include "string_utils.h"
-#include "file_utils.h"
+#include "utils.h"
 
+typedef struct _OnsenArchiveEntry_s OnsenArchiveEntry_t;
 struct _OnsenArchiveEntry_s
 {
     char *szFilename;                       /* Entry filename.                */
@@ -54,4 +53,5 @@ struct _OnsenArchiveEntry_s
 
 OnsenArchiveEntry_t *onsen_new_archive_entry();
 void onsen_free_archive_entry(OnsenArchiveEntry_t *);
+
 #endif /* __ONSEN_ARCHIVE_ENTRY_H */

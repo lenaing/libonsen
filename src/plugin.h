@@ -29,6 +29,7 @@ struct _OnsenPlugin_s
     char *szAuthors;                        /* Plugin authors.                */
 
     void *pInstance;
+
     int (*getPluginInfos)(int, char *, int);
     int (*isFileSupported)(const char *, int, void *);
 };

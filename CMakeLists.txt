@@ -42,15 +42,16 @@ PROJECT(LibOnsen)
 
 SET(
     libonsen_SRCS
-        onsen.c
-        archive_entry.c
-        archive_plugin.c
-        file_utils.c
-        iconv_utils.c
-        plugin.c
-        shift_jis_utils.c
-        string_utils.c
-        utils.c
+        src/onsen.c
+        src/archive_entry.c
+        src/archive_info.c
+        src/archive_plugin.c
+        src/file_utils.c
+        src/iconv_utils.c
+        src/plugin.c
+        src/shift_jis_utils.c
+        src/string_utils.c
+        src/utils.c
 )
 
 SET(ONSEN_VERSION_MAJOR 0)
@@ -58,8 +59,8 @@ SET(ONSEN_VERSION_MINOR 1)
 SET(ONSEN_VERSION_RELEASE "a")
 
 CONFIGURE_FILE(
-    "${PROJECT_SOURCE_DIR}/config.h.in"
-    "${PROJECT_SOURCE_DIR}/config.h"
+    "${PROJECT_SOURCE_DIR}/src/config.h.in"
+    "${PROJECT_SOURCE_DIR}/src/config.h"
 )
 
 ADD_DEFINITIONS(-W -Wall -ansi -pedantic -fPIC)

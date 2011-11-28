@@ -59,9 +59,11 @@ onsen_free_archive_entry(OnsenArchiveEntry_t *pEntry)
     int i;
 
     if (NULL != pEntry) {
+
         if (NULL != pEntry->szFilename) {
             onsen_free(pEntry->szFilename);
         }
+
         if (NULL != pEntry->a_szAddlFds) {
             for (i = 0; i < pEntry->iAddlFdsCount; i++) {
                 if (NULL != pEntry->a_szAddlFds[i]) {
@@ -70,69 +72,8 @@ onsen_free_archive_entry(OnsenArchiveEntry_t *pEntry)
             }
             onsen_free(pEntry->a_szAddlFds);
         }
+
         onsen_free(pEntry);
+
     }
-}
-
-int
-onsen_dump_archive_raw(OnsenArchivePlugin_t *pPlugin, const char *szPath)
-{
-    int i;
-
-    for (i = 1; i<=pPlugin->iArchiveEntriesCount; i++) {
-        pPlugin->extractFromArchive(pPlugin, szPath, i);
-    }
-    /* TODO return */
-    return 0;
-}
-
-int
-onsen_dump_archive_entry_raw(OnsenArchivePlugin_t *pPlugin,
-                             const char *szPath,
-                             int iEntryID)
-{
-    OnsenArchiveEntry_t *pEntry = pPlugin->a_pArchiveEntries[iEntryID];
-    char *szOutputFilename;
-    FILE *pOutputFile;
-    /* TODO DEFINE THIS */
-    char buffer[1024];
-    int iToRead;
-    int iCount;
-    int iRemaining;
-
-    assert(NULL != pPlugin);
-    assert(NULL != pEntry);
-    assert(NULL != szPath);
-
-    szOutputFilename = onsen_build_filename(szPath, pEntry->szFilename);
-    iCount = 0;
-    iToRead = 0;
-
-    pOutputFile = onsen_open_file(szOutputFilename, "wb");
-
-    if (NULL != pOutputFile) {
-        /* FIXME ftell check */
-        onsen_file_goto(pPlugin->pArchiveFile, pEntry->iOffset);
-        if (pEntry->iSize < 1024) {
-            fread(&buffer, pEntry->iSize, 1, pPlugin->pArchiveFile);
-            fwrite(&buffer, pEntry->iSize, 1, pOutputFile);
-        } else {
-            while (iCount < pEntry->iSize) {
-                iRemaining = pEntry->iSize - iCount;
-                if (iRemaining < 1024) {
-                    iToRead = iRemaining;
-                } else {
-                    iToRead = 1024;
-                }
-                fread(&buffer, iToRead, 1, pPlugin->pArchiveFile);
-                fwrite(&buffer, iToRead, 1, pOutputFile);
-                iCount += 1024;
-            }
-        }
-    }
-
-    onsen_close_file(pOutputFile);
-    onsen_free(szOutputFilename);
-
-    return 0;
 }
