@@ -35,7 +35,7 @@
  */
 #include "archive_plugin.h"
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 OnsenArchivePlugin_t *
 onsen_new_archive_plugin()
@@ -139,9 +139,11 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
 
     if (NULL != pDstFile) {
         onsen_file_goto(pSrcFile, lSrcOffset);
+        pCallback(iSrcSize, 0, pData);
         if (iSrcSize < BUFFER_SIZE) {
             fread(aBuffer, iSrcSize, 1, pSrcFile);
             fwrite(aBuffer, iSrcSize, 1, pDstFile);
+            pCallback(iSrcSize, iSrcSize, pData);
         } else {
             while (iCount < iSrcSize) {
                 iRemaining = iSrcSize - iCount;
@@ -152,8 +154,7 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
                 }
                 fread(aBuffer, iToRead, 1, pSrcFile);
                 fwrite(aBuffer, iToRead, 1, pDstFile);
-                iCount += BUFFER_SIZE;
-                onsen_out_ok("%d, %d :", iSrcSize, iCount);
+                iCount += iToRead;
                 pCallback(iSrcSize, iCount, pData);
             }
         }
