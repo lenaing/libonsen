@@ -6,10 +6,10 @@ Any Plugin
 
     Any plugin *must* implement the following mandatory functions :
 
-    1 - onsen_get_plugin_infos
+    1 - onsen_get_plugin_info
     2 - onsen_is_file_supported
 
-+ onsen_get_plugin_infos :
++ onsen_get_plugin_info :
 
     Prototype : int (*)(int iInfoID, char *szBuffer, int iBufferLen)
 
@@ -21,7 +21,9 @@ Any Plugin
     |               |   1               Plugin name                 |
     |               |   2               Plugin version              |
     |               |   3               Plugin authors              |
+    |               |                                               |
     | szBuffer      | Buffer to fill the info with                  |
+    |               |                                               |
     | iBufferLen    | Buffer length (bytes)                         |
     -----------------------------------------------------------------
 
@@ -46,9 +48,11 @@ Any Plugin
     | Arguments     | Description                                   |
     -----------------------------------------------------------------
     | szFilename    | Full path filename                            |
+    |               |                                               |
     | iFileType     | File type         Meaning                     |
     |               |   0               Disk file                   |
     |               |   1               Memory file                 |
+    |               |                                               |
     | pFile         | File type         Meaning                     |
     |               |   0               File handle                 |
     |               |   1               Memory File handle          |
@@ -68,10 +72,109 @@ Any Plugin
 Archive Plugin
 --------------
 
-TODO
-
     Any ARCHIVE plugin *must* implement the following functions :
 
-    - onsen_get_archive_info
-    - onsen_get_archive_file_info
-    - onsen_write_archive_file
+    1 - onsen_get_archive_info
+    2 - onsen_get_file_info
+
++ onsen_get_archive_info :
+
+    Prototype : int onsen_get_archive_info(void *pFile, long lPos,
+                                           int iFileType,
+                                           OnsenArchiveInfo_t *pArchiveInfo)
+
+    -----------------------------------------------------------------
+    | Arguments     | Description                                   |
+    -----------------------------------------------------------------
+    | pFile         | File type         Meaning                     |
+    |               |   0               Filename                    |
+    |               |   1               Pointer to memory file      |
+    |               |                                               |
+    | lOffset       | File type         Meaning                     |
+    |               |   0               Offset to start reading from|
+    |               |   1               Data size                   |
+    |               |                                               |
+    | iFileType     | File type         Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    |               |                                               |
+    | pArchiveInfo  | Allocated structure to fill with archive      |
+    |               | information                                   |
+    -----------------------------------------------------------------
+
+    Return value :
+        - 0 if information retrieval succeeded.
+        - !0 if retrieval failed.
+
++ onsen_get_file_info :
+
+    Prototype : int onsen_get_file_info(void *pFile, long lPos,
+                                        char *szFilename, int iFileType,
+                                        OnsenArchiveEntry_t *pEntry)
+
+    -----------------------------------------------------------------
+    | Arguments     | Description                                   |
+    -----------------------------------------------------------------
+    | pFile         | File type         Meaning                     |
+    |               |   0               Filename                    |
+    |               |   1               Pointer to memory file      |
+    |               |                                               |
+    | lOffset       | File type         Meaning                     |
+    |               |   0               Offset to start reading from|
+    |               |   1               Data size                   |
+    |               |                                               |
+    | szFilename    | Searched filename in archive                  |
+    |               |                                               |
+    | iFileType     | File type         Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    |               |                                               |
+    | pEntryInfo    | Allocated structure to fill with archive      |
+    |               | file information                              |
+    -----------------------------------------------------------------
+
+    Return value :
+        - 0 if information retrieval succeeded.
+        - !0 if retrieval failed.
+
+    Any ARCHIVE plugin *may* implement the following function :
+
+    1 - onsen_write_archive_file
+
+    Prototype : int onsen_write_file(void *szSrcFile, int iSrcType,
+                                     long lSrcOffset, int iSrcSize,
+                                     void *szDstFile, int iDstType,
+                                     OnsenWriteFileCallback pCallback,
+                                     void *pData)
+
+    -----------------------------------------------------------------
+    | Arguments     | Description                                   |
+    -----------------------------------------------------------------
+    | szSrcFile     | Source file type  Meaning                     |
+    |               |   0               Filename                    |
+    |               |   1               Pointer to memory file      |
+    |               |                                               |
+    | iSrcType      | Source file type  Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    |               |                                               |
+    | lSrcOffset    | File type         Meaning                     |
+    |               |   0               Offset to start reading from|
+    |               |   1               Data size                   |
+    |               |                                               |
+    | szDstFile     | Dest. file type   Meaning                     |
+    |               |   0               Filename                    |
+    |               |   1               Pointer to memory file      |
+    |               |                                               |
+    | iDstType      | Dest. file type   Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    |               |                                               |
+    | pCallback     | Callback to call when data is read or written |
+    |               |                                               |
+    | pData         | Data to pass to the callback                  |
+    -----------------------------------------------------------------
+
+    Return value :
+        - 0 if write succeeded.
+        - !0 if write failed.

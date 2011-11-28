@@ -64,7 +64,7 @@ struct _OnsenPlugin_s
     void *pInstance;                        /* Plugin specific instance.      */
 
     /* Mandatory plugin functions. */
-    int (*getPluginInfos)(int, char *, int);
+    int (*getPluginInfo)(int, char *, int);
     int (*isFileSupported)(const char *, int, void *);
 };
 

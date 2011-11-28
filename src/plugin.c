@@ -38,7 +38,7 @@ onsen_free_plugin(OnsenPlugin_t *pPlugin)
             onsen_free(pPlugin->szAuthors);
         }
 
-        if (NULL != pPlugin->pLibrary) {
+        if (NULL != pPlugin->pLibrary && pPlugin->bLibraryloaded) {
             dlclose(pPlugin->pLibrary);
         }
 
@@ -83,17 +83,17 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     }
 
     /* Load plugin onsen_get_plugin_infos function. */
-    pFun = dlsym(pPlugin->pLibrary, "onsen_get_plugin_infos");
+    pFun = dlsym(pPlugin->pLibrary, "onsen_get_plugin_info");
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin infos function from library '%s'.",
                      szLibFilename);
         return 2;
     }
-    memcpy(&(pPlugin->getPluginInfos), &pFun, sizeof(pPlugin->getPluginInfos));
+    memcpy(&(pPlugin->getPluginInfo), &pFun, sizeof(pPlugin->getPluginInfo));
 
     /* Check plugin API version */
-    if(pPlugin->getPluginInfos(0, api, 4)) {
+    if(pPlugin->getPluginInfo(0, api, 4)) {
 
         /* Check API version used */
         if ((api[0] != ONSEN_API_MAJOR) || (api[1] != ONSEN_API_MINOR)) {
@@ -125,7 +125,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
 
     /* Try to load generic plugin informations */
     szPluginName = onsen_calloc(sizeof(char), ONSEN_PLUGIN_NAME_SIZE);
-    rc = pPlugin->getPluginInfos(1, szPluginName, ONSEN_PLUGIN_NAME_SIZE);
+    rc = pPlugin->getPluginInfo(1, szPluginName, ONSEN_PLUGIN_NAME_SIZE);
     if (0 == rc) {
         onsen_err_warning("Failed to load plugin name from library '%s'.",
                            szLibFilename);
@@ -134,7 +134,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     pPlugin->szName = szPluginName;
 
     szPluginVersion = onsen_calloc(sizeof(char), ONSEN_PLUGIN_VERSION_SIZE);
-    rc = pPlugin->getPluginInfos(2, szPluginVersion, ONSEN_PLUGIN_VERSION_SIZE);
+    rc = pPlugin->getPluginInfo(2, szPluginVersion, ONSEN_PLUGIN_VERSION_SIZE);
     if (0 == rc) {
         onsen_err_warning("Failed to load plugin version from library '%s'.",
                            szLibFilename);
@@ -143,7 +143,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     pPlugin->szVersion = szPluginVersion;
 
     szPluginAuthors = onsen_calloc(sizeof(char), ONSEN_PLUGIN_AUTHORS_SIZE);
-    rc = pPlugin->getPluginInfos(3, szPluginAuthors, ONSEN_PLUGIN_AUTHORS_SIZE);
+    rc = pPlugin->getPluginInfo(3, szPluginAuthors, ONSEN_PLUGIN_AUTHORS_SIZE);
     if (0 == rc) {
         onsen_err_warning("Failed to load plugin authors from library '%s'.",
                            szLibFilename);
@@ -171,9 +171,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
         if (rc != 0) {
             onsen_err_ko("Failed to close library '%s'.", szLibFilename);
         }
-        /*onsen_free(szPluginName);
-        onsen_free(szPluginVersion);
-        onsen_free(szPluginAuthors);*/
+
         return 7;
     }
 
