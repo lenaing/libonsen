@@ -28,22 +28,16 @@ onsen_free_plugin(OnsenPlugin_t *pPlugin)
 {
     if (NULL != pPlugin) {
 
-        if (NULL != pPlugin->szName) {
-            onsen_free(pPlugin->szName);
-        }
-        if (NULL != pPlugin->szVersion) {
-            onsen_free(pPlugin->szVersion);
-        }
-        if (NULL != pPlugin->szAuthors) {
-            onsen_free(pPlugin->szAuthors);
-        }
+        onsen_unload_plugin(pPlugin);
 
-        if (NULL != pPlugin->pLibrary && pPlugin->bLibraryloaded) {
-            dlclose(pPlugin->pLibrary);
-        }
+        if (pPlugin->bLibraryloaded) {
+            if (NULL != pPlugin->pLibrary) {
+                dlclose(pPlugin->pLibrary);
+            }
 
-        if (NULL != pPlugin->pInstance && pPlugin->bLibraryloaded) {
-            onsen_free_plugin_instance(pPlugin);
+            if (NULL != pPlugin->pInstance) {
+                onsen_free_plugin_instance(pPlugin);
+            }
         }
 
         onsen_free(pPlugin);
@@ -184,10 +178,17 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
 int
 onsen_unload_plugin(OnsenPlugin_t *pPlugin)
 {
-    /* TODO */
-    onsen_free(pPlugin->szName);
-    onsen_free(pPlugin->szVersion);
-    onsen_free(pPlugin->szAuthors);
+    if (NULL != pPlugin) {
+        if (NULL != pPlugin->szName) {
+            onsen_free(pPlugin->szName);
+        }
+        if (NULL != pPlugin->szVersion) {
+            onsen_free(pPlugin->szVersion);
+        }
+        if (NULL != pPlugin->szAuthors) {
+            onsen_free(pPlugin->szAuthors);
+        }
+    }
     return 0;
 }
 
