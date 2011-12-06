@@ -104,67 +104,49 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
 
 int
 onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
-                     int iSrcSize, void *szDstFile, int iDstType,
-                     OnsenWriteFileCallback pCallback, void *pData)
+                 int iSrcSize, void *szDstFile, int iDstType,
+                 OnsenWriteFileCallback pCallback, void *pData)
 {
-    FILE *pSrcFile;
-    FILE *pDstFile;
-
-    unsigned char *aBuffer;
-    int iToRead = 0;
-    int iCount = 0;
-    int iRemaining = 0;
-    int rc = 0;
+    unsigned char *srcData;
+    unsigned char *dstData;
+    long lSrcFileSize;
+    int fdSrcFile;
+    int fdDstFile;
 
     if (0 == iSrcType) {
         /* Disk file */
-        pSrcFile = onsen_open_file((char *)szSrcFile, "rb");
-        aBuffer = onsen_calloc(sizeof(char), BUFFER_SIZE);
+        fdSrcFile = open((const char *)szSrcFile, O_RDONLY);
+        lSrcFileSize = lseek(fdSrcFile, 0, SEEK_END);
+        srcData = mmap(NULL, lSrcFileSize, PROT_READ, MAP_SHARED, fdSrcFile, 0);
     } else {
         /* Memory file */
-        /* TODO */
+        srcData = (unsigned char*)szSrcFile;
     }
 
     if (0 == iDstType) {
         /* Disk file */
-        pDstFile = onsen_open_file((char *)szDstFile, "wb");
-        
+        fdDstFile = open((const char *)szDstFile, O_RDWR|O_CREAT|O_TRUNC, 0644);
+        pwrite(fdDstFile, "", 1, iSrcSize-1);
+        dstData = mmap(NULL, iSrcSize, PROT_WRITE, MAP_SHARED, fdDstFile, 0);
     } else {
         /* Memory file */
-        /* TODO */
+        dstData = (unsigned char*)szDstFile;
     }
 
-    if (NULL != pDstFile) {
-        onsen_file_goto(pSrcFile, lSrcOffset);
-        pCallback(iSrcSize, 0, pData);
-        if (iSrcSize < BUFFER_SIZE) {
-            fread(aBuffer, iSrcSize, 1, pSrcFile);
-            fwrite(aBuffer, iSrcSize, 1, pDstFile);
-            pCallback(iSrcSize, iSrcSize, pData);
-        } else {
-            while (iCount < iSrcSize) {
-                iRemaining = iSrcSize - iCount;
-                if (iRemaining < BUFFER_SIZE) {
-                    iToRead = iRemaining;
-                } else {
-                    iToRead = BUFFER_SIZE;
-                }
-                fread(aBuffer, iToRead, 1, pSrcFile);
-                fwrite(aBuffer, iToRead, 1, pDstFile);
-                iCount += iToRead;
-                pCallback(iSrcSize, iCount, pData);
-            }
-        }
+    /* FIXME : Progress on the decyphering? */
+    pCallback(100, 0, pData);
+    memcpy(dstData, srcData+lSrcOffset, iSrcSize);
+    pCallback(100, 100, pData);
 
-        onsen_close_file(pDstFile);
-    } else {
-        rc = 1;
+    /* Close disk files */
+    if (0 == iSrcType) {
+        munmap(srcData, lSrcFileSize);
+        close(fdSrcFile);
+    }
+    if (0 == iDstType) {
+        munmap(dstData, iSrcSize);
+        close(fdDstFile);
     }
 
-    onsen_free(aBuffer);
-    if (NULL != pSrcFile) {
-        onsen_close_file(pSrcFile);
-    }
-
-    return rc;
+    return 1;
 }
