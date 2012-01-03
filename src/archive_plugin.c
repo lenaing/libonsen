@@ -103,8 +103,8 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
 }
 
 int
-onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
-                 int iSrcSize, void *szDstFile, int iDstType,
+onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
+                 int iDstType, void *szDstFile, long lDstFileSize,
                  OnsenWriteFileCallback pCallback, void *pData)
 {
     unsigned char *srcData;
@@ -126,8 +126,8 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
     if (0 == iDstType) {
         /* Disk file */
         fdDstFile = open((const char *)szDstFile, O_RDWR|O_CREAT|O_TRUNC, 0644);
-        pwrite(fdDstFile, "", 1, iSrcSize-1);
-        dstData = mmap(NULL, iSrcSize, PROT_WRITE, MAP_SHARED, fdDstFile, 0);
+        pwrite(fdDstFile, "", 1, lDstFileSize-1);
+        dstData = mmap(NULL, lDstFileSize, PROT_WRITE, MAP_SHARED, fdDstFile, 0);
     } else {
         /* Memory file */
         dstData = (unsigned char*)szDstFile;
@@ -135,7 +135,7 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
 
     /* FIXME : Progress on the decyphering? */
     pCallback(100, 0, pData);
-    memcpy(dstData, srcData+lSrcOffset, iSrcSize);
+    memcpy(dstData, srcData+lSrcOffset, lDstFileSize);
     pCallback(100, 100, pData);
 
     /* Close disk files */
@@ -144,7 +144,7 @@ onsen_write_file_raw(void *szSrcFile, int iSrcType, long lSrcOffset,
         close(fdSrcFile);
     }
     if (0 == iDstType) {
-        munmap(dstData, iSrcSize);
+        munmap(dstData, lDstFileSize);
         close(fdDstFile);
     }
 

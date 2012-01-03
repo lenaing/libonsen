@@ -21,6 +21,8 @@ Any Plugin
     |               |   1               Plugin name                 |
     |               |   2               Plugin version              |
     |               |   3               Plugin authors              |
+    |               |   3+X             File extension no. X        |
+    |               |   3+X+1           File description no. X      |
     |               |                                               |
     | szBuffer      | Buffer to fill the info with                  |
     |               |                                               |
@@ -33,8 +35,8 @@ Any Plugin
 
     Comments :
         - The plugin metadata is a 3 bytes array that must be read to ensure
-          that the plugin use the correct *libonsen* API and the plugin type
-          is supported.
+          that the plugin uses the correct *libonsen* API and that the plugin
+          type is supported.
 
           Here is an exemple : 01 A
                                 | +--- A : Archive plugin
@@ -42,7 +44,7 @@ Any Plugin
 
 + onsen_is_file_supported :
 
-    Prototype : int (*)(char *szFilename, int iFileType, void *pFile)
+    Prototype : int (*)(const char *szFilename, int iFileType, void *pFile)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
@@ -59,12 +61,12 @@ Any Plugin
     -----------------------------------------------------------------
 
     Return value :
-        - 0 if file is supported by the plugin.
-        - !0 file is not supported.
+        - 1 if file is supported by the plugin.
+        - !1 file is not supported.
 
     Comments :
-        - Each plugin examine the header of the file passed to quickly
-          determine if the file format is supported by the plugin.
+        - Each plugin examines the header of the given file in order to
+          quickly determine if the file format is supported by the plugin.
           In rare cases the filename or the extensions are required for
           support determination. That is why the filename is passed to
           this function.
@@ -79,13 +81,17 @@ Archive Plugin
 
 + onsen_get_archive_info :
 
-    Prototype : int onsen_get_archive_info(void *pFile, long lPos,
-                                           int iFileType,
+    Prototype : int onsen_get_archive_info(int iFileType, void *pFile,
+                                           long lPos,
                                            OnsenArchiveInfo_t *pArchiveInfo)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
     -----------------------------------------------------------------
+    | iFileType     | File type         Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    |               |                                               |
     | pFile         | File type         Meaning                     |
     |               |   0               Filename                    |
     |               |   1               Pointer to memory file      |
@@ -94,27 +100,27 @@ Archive Plugin
     |               |   0               Offset to start reading from|
     |               |   1               Data size                   |
     |               |                                               |
-    | iFileType     | File type         Meaning                     |
-    |               |   0               Disk file                   |
-    |               |   1               Memory file                 |
-    |               |                                               |
     | pArchiveInfo  | Allocated structure to fill with archive      |
     |               | information                                   |
     -----------------------------------------------------------------
 
     Return value :
-        - 0 if information retrieval succeeded.
-        - !0 if retrieval failed.
+        - 1 if information retrieval succeeded.
+        - !1 if retrieval failed.
 
 + onsen_get_file_info :
 
-    Prototype : int onsen_get_file_info(void *pFile, long lPos,
-                                        char *szFilename, int iFileType,
+    Prototype : int onsen_get_file_info(int iFileType, void *pFile,
+                                        long lPos, char *szFilename,
                                         OnsenArchiveEntry_t *pEntry)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
     -----------------------------------------------------------------
+    | iFileType     | File type         Meaning                     |
+    |               |   0               Disk file                   |
+    |               |   1               Memory file                 |
+    |               |                                               |
     | pFile         | File type         Meaning                     |
     |               |   0               Filename                    |
     |               |   1               Pointer to memory file      |
@@ -125,56 +131,54 @@ Archive Plugin
     |               |                                               |
     | szFilename    | Searched filename in archive                  |
     |               |                                               |
-    | iFileType     | File type         Meaning                     |
-    |               |   0               Disk file                   |
-    |               |   1               Memory file                 |
-    |               |                                               |
     | pEntryInfo    | Allocated structure to fill with archive      |
     |               | file information                              |
     -----------------------------------------------------------------
 
     Return value :
-        - 0 if information retrieval succeeded.
-        - !0 if retrieval failed.
+        - 1 if information retrieval succeeded.
+        - !1 if retrieval failed.
 
     Any ARCHIVE plugin *may* implement the following function :
 
     1 - onsen_write_archive_file
 
-    Prototype : int onsen_write_file(void *szSrcFile, int iSrcType,
-                                     long lSrcOffset, int iSrcSize,
-                                     void *szDstFile, int iDstType,
+    Prototype : int onsen_write_file(int iSrcType, void *szSrcFile,
+                                     long lSrcOffset, long lSrcSize,
+                                     int iDstType, void *szDstFile,
                                      OnsenWriteFileCallback pCallback,
                                      void *pData)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
     -----------------------------------------------------------------
-    | szSrcFile     | Source file type  Meaning                     |
-    |               |   0               Filename                    |
-    |               |   1               Pointer to memory file      |
-    |               |                                               |
     | iSrcType      | Source file type  Meaning                     |
     |               |   0               Disk file                   |
     |               |   1               Memory file                 |
+    |               |                                               |
+    | szSrcFile     | Source file type  Meaning                     |
+    |               |   0               Filename                    |
+    |               |   1               Pointer to memory file      |
     |               |                                               |
     | lSrcOffset    | File type         Meaning                     |
     |               |   0               Offset to start reading from|
     |               |   1               Data size                   |
     |               |                                               |
-    | szDstFile     | Dest. file type   Meaning                     |
-    |               |   0               Filename                    |
-    |               |   1               Pointer to memory file      |
-    |               |                                               |
     | iDstType      | Dest. file type   Meaning                     |
     |               |   0               Disk file                   |
     |               |   1               Memory file                 |
     |               |                                               |
+    | szDstFile     | Dest. file type   Meaning                     |
+    |               |   0               Filename                    |
+    |               |   1               Pointer to memory file      |
+    |               |                                               |
+    | lDstFileSize  | Archive file uncompressed size                |
+    |               |                                               |
     | pCallback     | Callback to call when data is read or written |
     |               |                                               |
-    | pData         | Data to pass to the callback                  |
+    | pData         | Data, usually a OnsenArchiveEntry_t structure |
     -----------------------------------------------------------------
 
     Return value :
-        - 0 if write succeeded.
-        - !0 if write failed.
+        - 1 if write succeeded.
+        - !1 if write failed.

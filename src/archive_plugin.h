@@ -50,11 +50,11 @@ typedef struct _OnsenArchivePlugin_s OnsenArchivePlugin_t;
 struct _OnsenArchivePlugin_s
 {
     /* Mandatory archive functions.        */
-    int (*getArchiveInfo)(void *, long, int, OnsenArchiveInfo_t *);
-    int (*getFileInfo)(void *, long, char *, int, OnsenArchiveEntry_t *);
+    int (*getArchiveInfo)(int, void *, long, OnsenArchiveInfo_t *);
+    int (*getFileInfo)(int, void *, long, char *,OnsenArchiveEntry_t *);
 
     /* Optional archive functions.        */
-    int (*writeFile)(void *, int, long, int, void *, int,
+    int (*writeFile)(int, void *, long, int, void *, long,
                      OnsenWriteFileCallback, void *);
 };
 
@@ -65,7 +65,7 @@ int onsen_load_archive_plugin(OnsenArchivePlugin_t *, const char *);
 int onsen_unload_archive_plugin(OnsenArchivePlugin_t *);
 int onsen_archive_plugin_load_funcs(OnsenPlugin_t *);
 
-int onsen_write_file_raw(void *, int, long, int, void *, int,
+int onsen_write_file_raw(int, void *, long, int, void *, long,
                          OnsenWriteFileCallback, void *);
 
 #endif /* __ONSEN_ARCHIVE_PLUGIN_H */
