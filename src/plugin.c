@@ -62,19 +62,7 @@ void
 onsen_free_plugin(OnsenPlugin_t *pPlugin)
 {
     if (NULL != pPlugin) {
-
         onsen_unload_plugin(pPlugin);
-
-        if (pPlugin->bLibraryloaded) {
-            if (NULL != pPlugin->pLibrary) {
-                dlclose(pPlugin->pLibrary);
-            }
-
-            if (NULL != pPlugin->pInstance) {
-                onsen_free_plugin_instance(pPlugin);
-            }
-        }
-
         onsen_free(pPlugin);
     }
 }
@@ -90,15 +78,15 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     char *szPluginVersion;
     char *szPluginAuthors;
 
-
     assert(NULL != pPlugin);
     assert(NULL != szLibFilename);
 
     /* Library already loaded. Unload it first. */
     if (pPlugin->bLibraryloaded) {
+        onsen_err_warning("Plugin %s %salready loaded. Attempt to reload it...",
+                          pPlugin->szName, pPlugin->szVersion);
         rc = onsen_unload_plugin(pPlugin);
         if (rc != 0) {
-            /* TODO change return code */
             return 1;
         }
     }
@@ -117,7 +105,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin infos function from library '%s'.",
                      szLibFilename);
-        return 2;
+        return 1;
     }
     memcpy(&(pPlugin->getPluginInfo), &pFun, sizeof(pPlugin->getPluginInfo));
 
@@ -127,10 +115,10 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
         /* Check API version used */
         if ((api[0] != ONSEN_API_MAJOR) || (api[1] != ONSEN_API_MINOR)) {
             onsen_err_ko("Unknown Onsen API : '%c.%c' for library '%s'.",
-                     api[0],
-                     api[1],
-                     szLibFilename);
-            return 3;
+                         api[0],
+                         api[1],
+                         szLibFilename);
+            return 1;
         }
 
         /* Check plugin type */
@@ -142,14 +130,14 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                 onsen_err_ko("Unknown plugin type : '0x%02X' for library '%s'.",
                              api[2],
                              szLibFilename);
-                return 4;
+                return 1;
             }
         }
 
     } else {
         onsen_err_ko("Unable to retrieve plugin infos from library '%s'.",
                      szLibFilename);
-        return 5;
+        return 1;
     }
 
     /* Try to load generic plugin informations */
@@ -186,25 +174,27 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin %s file support function.",
                      pPlugin->szName);
-        return 6;
+        return 1;
     }
-    memcpy(&(pPlugin->isFileSupported), &pFun, sizeof(pPlugin->isFileSupported));
+    memcpy(&(pPlugin->isFileSupported), &pFun,
+           sizeof(pPlugin->isFileSupported));
 
     /* Create instance of plugin */
     rc = onsen_new_plugin_instance(pPlugin);
-    if (rc != 0) {
-        /* Failed to instanciate plugin instance */
+    if (0 != rc) {
+        /* Failed to instantiate plugin instance */
         onsen_err_ko("Failed to load plugin %s functions from library.",
                      szPluginName);
         rc = dlclose(pPlugin->pLibrary);
-        if (rc != 0) {
+        if (0 != rc) {
             onsen_err_ko("Failed to close library '%s'.", szLibFilename);
         }
 
-        return 7;
+        return 1;
     }
 
-    onsen_out_ok("Loaded plugin %s %s%s.", pPlugin->szName, pPlugin->szVersion, pPlugin->szAuthors);
+    onsen_out_ok("Loaded plugin %s %s%s.", pPlugin->szName, pPlugin->szVersion,
+                 pPlugin->szAuthors);
     pPlugin->bLibraryloaded = 1;
 
     return 0;
@@ -213,6 +203,8 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
 int
 onsen_unload_plugin(OnsenPlugin_t *pPlugin)
 {
+    int rc = 0;
+
     if (NULL != pPlugin) {
         if (NULL != pPlugin->szName) {
             onsen_free(pPlugin->szName);
@@ -223,7 +215,23 @@ onsen_unload_plugin(OnsenPlugin_t *pPlugin)
         if (NULL != pPlugin->szAuthors) {
             onsen_free(pPlugin->szAuthors);
         }
+
+        if (pPlugin->bLibraryloaded) {
+            if (NULL != pPlugin->pInstance) {
+                onsen_free_plugin_instance(pPlugin);
+            }
+
+            if (NULL != pPlugin->pLibrary) {
+                rc = dlclose(pPlugin->pLibrary);
+                if (rc != 0) {
+                    onsen_err_ko("Failed to close library.");
+                    return 1;
+                }
+            }
+        }
     }
+
+    pPlugin->bLibraryloaded = 0;
     return 0;
 }
 
@@ -235,27 +243,26 @@ onsen_new_plugin_instance(OnsenPlugin_t *pPlugin)
 
     assert(NULL != pPlugin);
 
-    /* Check plugin type */
     switch(pPlugin->iType) {
         case ONSEN_PLUGIN_ARCHIVE : {
             pInstance = onsen_new_archive_plugin();
             if (NULL == pInstance) {
-                /* Failed to instanciate. */
                 onsen_err_ko("Failed to instantiate plugin...");
                 return 1;
             }
             pPlugin->pInstance = pInstance;
             rc = onsen_archive_plugin_load_funcs(pPlugin);
             if (0 != rc) {
-                /* Failed to load necessary functions. */
-                onsen_err_ko("Failed to load functions...");
+                onsen_err_ko("Failed to load mandatory functions...");
                 onsen_free_archive_plugin(pInstance);
                 return 1;
             }
             
         } break;
+
         default : {
-            /* Can't instanciate unknown plugin type. */
+            onsen_err_ko("Can't instantiate unknow plugin type '%c'...",
+                         pPlugin->iType);
             return 1;
         }
     }
@@ -266,19 +273,17 @@ onsen_new_plugin_instance(OnsenPlugin_t *pPlugin)
 void
 onsen_free_plugin_instance(OnsenPlugin_t *pPlugin)
 {
-
     assert(NULL != pPlugin);
 
     if (NULL != pPlugin->pInstance) {
-
         /* Check plugin type */
         switch(pPlugin->iType) {
             case ONSEN_PLUGIN_ARCHIVE : {
                 onsen_free_archive_plugin(pPlugin->pInstance);
             } break;
-            default :
-             ;
+            default : {
+                /* Should never happen. */
+            };
         }
-
     }
 }
