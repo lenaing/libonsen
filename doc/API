@@ -11,6 +11,8 @@ Any Plugin
 
 + onsen_get_plugin_info :
 
+    Retrieve information about the plugin in a given buffer.
+
     Prototype : int (*)(int iInfoID, char *szBuffer, int iBufferLen)
 
     -----------------------------------------------------------------
@@ -44,6 +46,8 @@ Any Plugin
 
 + onsen_is_file_supported :
 
+    Check if the given file is supported by the plugin.
+
     Prototype : int (*)(const char *szFilename, int iFileType, void *pFile)
 
     -----------------------------------------------------------------
@@ -62,7 +66,7 @@ Any Plugin
 
     Return value :
         - 1 if file is supported by the plugin.
-        - !1 file is not supported.
+        - 0 if file is not supported by the plugin.
 
     Comments :
         - Each plugin examines the header of the given file in order to
@@ -80,6 +84,8 @@ Archive Plugin
     2 - onsen_get_file_info
 
 + onsen_get_archive_info :
+
+    Retrieve information about given archive.
 
     Prototype : int onsen_get_archive_info(int iFileType, void *pFile,
                                            long lPos,
@@ -106,12 +112,14 @@ Archive Plugin
 
     Return value :
         - 1 if information retrieval succeeded.
-        - !1 if retrieval failed.
+        - 0 if information retrieval failed.
 
 + onsen_get_file_info :
 
+    Retrieve information about an archive file.
+
     Prototype : int onsen_get_file_info(int iFileType, void *pFile,
-                                        long lPos, char *szFilename,
+                                        long lOffset, char *szFilename,
                                         OnsenArchiveEntry_t *pEntry)
 
     -----------------------------------------------------------------
@@ -131,21 +139,21 @@ Archive Plugin
     |               |                                               |
     | szFilename    | Searched filename in archive                  |
     |               |                                               |
-    | pEntryInfo    | Allocated structure to fill with archive      |
+    | pEntry        | Allocated structure to fill with archive      |
     |               | file information                              |
     -----------------------------------------------------------------
 
     Return value :
         - 1 if information retrieval succeeded.
-        - !1 if retrieval failed.
+        - 0 if information retrieval failed.
 
     Any ARCHIVE plugin *may* implement the following function :
 
     1 - onsen_write_archive_file
 
     Prototype : int onsen_write_file(int iSrcType, void *szSrcFile,
-                                     long lSrcOffset, long lSrcSize,
-                                     int iDstType, void *szDstFile,
+                                     long lSrcOffset, int iDstType,
+                                     void *szDstFile, long lDstFileSize,
                                      OnsenWriteFileCallback pCallback,
                                      void *pData)
 
@@ -181,4 +189,4 @@ Archive Plugin
 
     Return value :
         - 1 if write succeeded.
-        - !1 if write failed.
+        - 0 if write failed.
