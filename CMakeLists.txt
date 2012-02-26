@@ -46,6 +46,7 @@ SET(
         src/archive_entry.c
         src/archive_info.c
         src/archive_plugin.c
+        src/encodings.c
         src/file_utils.c
         src/iconv_utils.c
         src/plugin.c

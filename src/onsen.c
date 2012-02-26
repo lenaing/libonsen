@@ -35,9 +35,14 @@
  */
 #include "onsen.h"
 
+int onsen_verbosity = 0;
+
 void
-onsen_init()
+onsen_init(int iVerbosity)
 {
+    if (1 <= iVerbosity) {
+        onsen_verbosity = iVerbosity;
+    }
     onsen_out_ok("Using libonsen v%d.%d%s ♨",
                   ONSEN_VERSION_MAJOR,
                   ONSEN_VERSION_MINOR,

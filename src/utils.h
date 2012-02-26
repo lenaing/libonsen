@@ -37,6 +37,7 @@
 #define __ONSEN_UTILS_H
 
 #include "globals.h"
+#include "verbosity.h"
 #include <stdarg.h>
 
 #ifdef DEBUG
@@ -59,9 +60,10 @@
     } while (0)
 #endif
 
+void onsen_out_barf(const char *, ...);
 void onsen_out_ok(const char *, ...);
-void onsen_err_ko(const char *, ...);
 void onsen_err_warning(const char *, ...);
+void onsen_err_ko(const char *, ...);
 void onsen_err_critical(const char *, ...);
 
 void *onsen_malloc(const size_t);

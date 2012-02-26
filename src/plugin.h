@@ -36,23 +36,40 @@
 #ifndef __ONSEN_PLUGIN_H
 #define __ONSEN_PLUGIN_H
 
-#define ONSEN_PLUGIN_UNSUPPORTED 0
-#define ONSEN_PLUGIN_ARCHIVE 'A'
 #define ONSEN_API_MAJOR '0'
 #define ONSEN_API_MINOR '1'
+
+#define ONSEN_PLUGIN_UNSUPPORTED 0
+#define ONSEN_PLUGIN_ARCHIVE 'A'
+
 #define ONSEN_PLUGIN_NAME_SIZE 65
 #define ONSEN_PLUGIN_VERSION_SIZE 65
 #define ONSEN_PLUGIN_AUTHORS_SIZE 65
+
 #define ONSEN_DISK_FILE 0
 #define ONSEN_MEMORY_FILE 1
 
+#define ELIBOPN         1   /* Failed to open library. */
+#define ELIBPLGGETINF   2   /* Failed to find onsen_get_plugin_info function in
+                             * library. */
+#define ELIBPLGFILSUP   3   /* Failed to find onsen_is_file_supported function 
+                             * in library. */
+#define ELIBWRGAPI      4   /* Library uses a wrong or unknown API version. */
+#define EPLGINVTYP      5   /* Library provide an unknown plugin type. */
+#define EPLGMETA        6   /* Failed to read plugin metadata in library. */
+#define EPLGMANFUN      7   /* Failed to find mandatory functions in library. */
+#define EPLGRLD         8   /* Failed to reload plugin. */
+
+
 #include "utils.h"
+#include <errno.h>
 #include <dlfcn.h>
 
 typedef struct _OnsenPlugin_s OnsenPlugin_t;
 struct _OnsenPlugin_s
 {
-    int bLibraryloaded;                     /* Is plugin library loaded?      */
+    int bLibraryOpened;                     /* Is plugin library opened?      */
+    int bLibraryLoaded;                     /* Is plugin library loaded?      */
     void *pLibrary;                         /* Plugin library handle.         */
     char *szLibraryError;                   /* Plugin library last error.     */
 

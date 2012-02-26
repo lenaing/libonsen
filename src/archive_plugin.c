@@ -67,7 +67,7 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
     assert(NULL != pPlugin);
 
     /* Library already loaded. */
-    if (pPlugin->bLibraryloaded) {
+    if (pPlugin->bLibraryLoaded) {
         onsen_err_warning("Plugin %s already loaded.", pPlugin->szName);
         return 0;
     }

@@ -44,6 +44,7 @@ onsen_new_archive_info()
     pInfo->lArchiveFileSize = 0;
     pInfo->a_pArchiveEntries = NULL;
     pInfo->iArchiveEntriesCount = 0;
+    pInfo->eArchiveFilenamesEncoding = ASCII;
 
     return pInfo;
 }

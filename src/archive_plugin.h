@@ -36,7 +36,9 @@
 #ifndef __ONSEN_ARCHIVE_PLUGIN_H
 #define __ONSEN_ARCHIVE_PLUGIN_H
 
-#define _XOPEN_SOURCE 600
+#ifndef _XOPEN_SOURCE
+    #define _XOPEN_SOURCE 500
+#endif
 #include "archive_entry.h"
 #include "archive_info.h"
 #include "file_utils.h"

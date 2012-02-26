@@ -35,10 +35,32 @@
  */
 #include "utils.h"
 
+extern int onsen_verbosity;
+
+void
+onsen_out_barf(const char *szWhat, ...)
+{
+    va_list ap;
+
+    if (onsen_verbosity < ETLAJESUISHYPERCONTENT) {
+        return;
+    }
+
+    fprintf(stdout, "[ ] ");
+    va_start(ap, szWhat);
+    vfprintf(stdout, szWhat, ap);
+    va_end(ap);
+    fprintf(stdout,"\n");
+}
+
 void
 onsen_out_ok(const char *szWhat, ...)
 {
     va_list ap;
+
+    if (onsen_verbosity < QUANDJESUISCONTENTJEVOMIS) {
+        return;
+    }
 
     fprintf(stdout, "[+] ");
     va_start(ap, szWhat);
@@ -48,11 +70,15 @@ onsen_out_ok(const char *szWhat, ...)
 }
 
 void
-onsen_err_ko(const char *szWhat, ...)
+onsen_err_warning(const char *szWhat, ...)
 {
     va_list ap;
 
-    fprintf(stderr, "[!] ");
+    if (onsen_verbosity < WARNINGS) {
+        return;
+    }
+
+    fprintf(stderr, "[?] ");
     va_start(ap, szWhat);
     vfprintf(stderr, szWhat, ap);
     va_end(ap);
@@ -60,11 +86,15 @@ onsen_err_ko(const char *szWhat, ...)
 }
 
 void
-onsen_err_warning(const char *szWhat, ...)
+onsen_err_ko(const char *szWhat, ...)
 {
     va_list ap;
 
-    fprintf(stderr, "[?] ");
+    if (onsen_verbosity < ERRORS) {
+        return;
+    }
+
+    fprintf(stderr, "[!] ");
     va_start(ap, szWhat);
     vfprintf(stderr, szWhat, ap);
     va_end(ap);
@@ -76,11 +106,14 @@ onsen_err_critical(const char *szWhat, ...)
 {
     va_list ap;
 
-    fprintf(stderr, "[X] ");
-    va_start(ap, szWhat);
-    vfprintf(stderr, szWhat, ap);
-    va_end(ap);
-    fprintf(stderr,"\n[X_X] You divided by zero? OH SHI-\n");
+    if (onsen_verbosity >= CRITICAL_ERRORS) {
+        fprintf(stderr, "[X] ");
+        va_start(ap, szWhat);
+        vfprintf(stderr, szWhat, ap);
+        va_end(ap);
+        fprintf(stderr,"\n[X_X] You divided by zero? OH SHI-\n");
+    }
+
     exit(EXIT_FAILURE);
 }
 
@@ -91,8 +124,8 @@ onsen_malloc(const size_t iSize)
 
     ptr = malloc(iSize);
     if (NULL == ptr) {
-        onsen_err_critical("malloc failed.");
         perror("malloc");
+        onsen_err_critical("malloc failed.");
     }
 
     return ptr;
@@ -105,8 +138,8 @@ onsen_calloc(const size_t iCount, const size_t iSize)
 
     ptr = calloc(iCount, iSize);
     if (NULL == ptr) {
-        onsen_err_critical("calloc failed.");
         perror("calloc");
+        onsen_err_critical("calloc failed.");
     }
 
     return ptr;
@@ -124,8 +157,8 @@ onsen_realloc(void *ptr, size_t iSize)
     }
 
     if (NULL == nptr) {
-        onsen_err_critical("realloc failed.");
         perror("realloc");
+        onsen_err_critical("realloc failed.");
     }
 
     return nptr;

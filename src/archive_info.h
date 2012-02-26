@@ -37,13 +37,17 @@
 #define __ONSEN_ARCHIVE_INFO_H
 
 #include "archive_entry.h"
+#include "encodings.h"
 
 typedef struct _OnsenArchiveInfo_s OnsenArchiveInfo_t;
 struct _OnsenArchiveInfo_s
 {
-    long lArchiveFileSize;                  /* Archive file size.             */
-    OnsenArchiveEntry_t **a_pArchiveEntries;/* Archive file entries.          */
-    int iArchiveEntriesCount;               /* Archive file entries count.    */
+    long lArchiveFileSize;                       /* Archive file size.        */
+    OnsenArchiveEntry_t **a_pArchiveEntries;     /* Archive file entries.     */
+    int iArchiveEntriesCount;                    /* Archive file entries
+                                                    count.                    */
+    enum OnsenEncoding eArchiveFilenamesEncoding;/* Archive file entries      */
+                                                 /* filenames encoding.       */
 };
 
 OnsenArchiveInfo_t *onsen_new_archive_info(void);

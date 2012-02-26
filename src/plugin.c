@@ -43,7 +43,8 @@ onsen_new_plugin()
 
     pPlugin = onsen_malloc(sizeof(OnsenPlugin_t));
 
-    pPlugin->bLibraryloaded = 0;
+    pPlugin->bLibraryOpened = 0;
+    pPlugin->bLibraryLoaded = 0;
     pPlugin->pLibrary = NULL;
     pPlugin->szLibraryError = NULL;
 
@@ -82,11 +83,13 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     assert(NULL != szLibFilename);
 
     /* Library already loaded. Unload it first. */
-    if (pPlugin->bLibraryloaded) {
+    if (1 == pPlugin->bLibraryLoaded) {
         onsen_err_warning("Plugin %s %salready loaded. Attempt to reload it...",
                           pPlugin->szName, pPlugin->szVersion);
         rc = onsen_unload_plugin(pPlugin);
         if (rc != 0) {
+            onsen_err_ko("Failed to reload plugin %s.", pPlugin->szName);
+            errno = EPLGRLD;
             return 1;
         }
     }
@@ -96,8 +99,10 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to open library '%s'.", szLibFilename);
+        errno = ELIBOPN;
         return 1;
     }
+    pPlugin->bLibraryOpened = 1;
 
     /* Load plugin onsen_get_plugin_infos function. */
     pFun = dlsym(pPlugin->pLibrary, "onsen_get_plugin_info");
@@ -105,6 +110,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin infos function from library '%s'.",
                      szLibFilename);
+        errno = ELIBPLGGETINF;
         return 1;
     }
     memcpy(&(pPlugin->getPluginInfo), &pFun, sizeof(pPlugin->getPluginInfo));
@@ -118,6 +124,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                          api[0],
                          api[1],
                          szLibFilename);
+            errno = ELIBWRGAPI;
             return 1;
         }
 
@@ -130,13 +137,15 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                 onsen_err_ko("Unknown plugin type : '0x%02X' for library '%s'.",
                              api[2],
                              szLibFilename);
+                errno = EPLGINVTYP;
                 return 1;
             }
         }
 
     } else {
-        onsen_err_ko("Unable to retrieve plugin infos from library '%s'.",
+        onsen_err_ko("Failed to retrieve plugin metadata from library '%s'.",
                      szLibFilename);
+        errno = EPLGMETA;
         return 1;
     }
 
@@ -174,6 +183,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin %s file support function.",
                      pPlugin->szName);
+        errno = ELIBPLGFILSUP;
         return 1;
     }
     memcpy(&(pPlugin->isFileSupported), &pFun,
@@ -185,17 +195,12 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
         /* Failed to instantiate plugin instance */
         onsen_err_ko("Failed to load plugin %s functions from library.",
                      szPluginName);
-        rc = dlclose(pPlugin->pLibrary);
-        if (0 != rc) {
-            onsen_err_ko("Failed to close library '%s'.", szLibFilename);
-        }
-
+        errno = EPLGMANFUN;
         return 1;
     }
-
     onsen_out_ok("Loaded plugin %s %s%s.", pPlugin->szName, pPlugin->szVersion,
-                 pPlugin->szAuthors);
-    pPlugin->bLibraryloaded = 1;
+                    pPlugin->szAuthors);
+    pPlugin->bLibraryLoaded = 1;
 
     return 0;
 }
@@ -216,22 +221,28 @@ onsen_unload_plugin(OnsenPlugin_t *pPlugin)
             onsen_free(pPlugin->szAuthors);
         }
 
-        if (pPlugin->bLibraryloaded) {
+        if (1 == pPlugin->bLibraryLoaded) {
             if (NULL != pPlugin->pInstance) {
                 onsen_free_plugin_instance(pPlugin);
             }
+        }
 
+        if (1 == pPlugin->bLibraryOpened) {
             if (NULL != pPlugin->pLibrary) {
                 rc = dlclose(pPlugin->pLibrary);
                 if (rc != 0) {
-                    onsen_err_ko("Failed to close library.");
+                    onsen_err_ko("Failed to close plugin library.");
                     return 1;
+                } else {
+                    onsen_err_ko("Closed plugin library.");
                 }
             }
         }
+
+        pPlugin->bLibraryLoaded = 0;
+        pPlugin->bLibraryOpened = 0;
     }
 
-    pPlugin->bLibraryloaded = 0;
     return 0;
 }
 
