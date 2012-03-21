@@ -44,23 +44,23 @@ Install
 ### From sources
 #### Getting the sources
 ##### Git
-`$ git clone git@github.com:lenaing/libonsen.git`
+    $ git clone git@github.com:lenaing/libonsen.git
 
 #### Compile
 
 As a normal user :
 
-`$ cd libonsen
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make`
+    $ cd libonsen
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
 
 #### Install
 
 As superuser :
 
-`# make install`
+    # make install
 
 Homepage
 --------
