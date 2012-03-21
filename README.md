@@ -38,18 +38,29 @@ Thanks to the Iconv support, you can manipulate Shift-JIS strings and translate
 them in another encoding. Please note that currently only Shift-JIS to UTF-8
 conversion is supported.
 
-Copyright
----------
-
-`libonsen` is released under a
-[CeCILL-C](http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html)
-free software license. Please see COPYING and LICENSE (en) or LICENCE (fr) files
-for more information on the license.
-
-Download
+Install
 --------
 
-TODO
+### From sources
+#### Getting the sources
+##### Git
+`$ git clone git@github.com:lenaing/libonsen.git`
+
+#### Compile
+
+As a normal user :
+
+`$ cd libonsen`
+`$ mkdir build`
+`$ cd build`
+`$ cmake ..`
+`$ make`
+
+#### Install
+
+As superuser :
+
+`# make install`
 
 Homepage
 --------
@@ -60,3 +71,12 @@ Bug reports to
 --------------
 
     Etienne 'lenaing' GIRONDEL <lenaing@gmail.com>
+
+Copyright
+---------
+
+`libonsen` is released under a
+[CeCILL-C](http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html)
+free software license. Please see COPYING and LICENSE (en) or LICENCE (fr) files
+for more information on the license.
+
