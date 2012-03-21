@@ -233,8 +233,6 @@ onsen_unload_plugin(OnsenPlugin_t *pPlugin)
                 if (rc != 0) {
                     onsen_err_ko("Failed to close plugin library.");
                     return 1;
-                } else {
-                    onsen_err_ko("Closed plugin library.");
                 }
             }
         }
