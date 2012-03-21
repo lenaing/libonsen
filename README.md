@@ -50,11 +50,11 @@ Install
 
 As a normal user :
 
-`$ cd libonsen`
-`$ mkdir build`
-`$ cd build`
-`$ cmake ..`
-`$ make`
+`$ cd libonsen
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make`
 
 #### Install
 
