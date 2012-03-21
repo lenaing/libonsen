@@ -55,6 +55,24 @@ SET(
         src/utils.c
 )
 
+SET(
+    libonsen_INCS
+        src/onsen.h
+        src/archive_entry.h
+        src/archive_info.h
+        src/archive_plugin.h
+        src/encodings.h
+        src/file_utils.h
+        src/iconv_utils.h
+        src/plugin.h
+        src/shift_jis_utils.h
+        src/string_utils.h
+        src/utils.h
+        src/globals.h
+        src/verbosity.h
+        src/config.h
+)
+
 SET(ONSEN_VERSION_MAJOR 0)
 SET(ONSEN_VERSION_MINOR 1)
 SET(ONSEN_VERSION_RELEASE "a")
@@ -66,3 +84,7 @@ CONFIGURE_FILE(
 
 ADD_DEFINITIONS(-W -Wall -ansi -pedantic -fPIC)
 ADD_LIBRARY(onsen STATIC ${libonsen_SRCS})
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
+INSTALL(FILES ${libonsen_INCS} DESTINATION "include/libonsen")
+INSTALL(TARGETS onsen DESTINATION lib)
