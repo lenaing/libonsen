@@ -10,8 +10,8 @@ games) data archives through an extensive plugins usage.
 As such, it can't be used alone. This library should be linked to an executable
 which will take benefit from the library functions.
 
-Functionnalities
-----------------
+Features
+--------
 
 ### Plugin API
 
@@ -42,8 +42,11 @@ Install
 --------
 
 ### From sources
+
 #### Getting the sources
+
 ##### Git
+
     $ git clone git@github.com:lenaing/libonsen.git
 
 #### Compile
@@ -79,4 +82,3 @@ Copyright
 [CeCILL-C](http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html)
 free software license. Please see COPYING and LICENSE (en) or LICENCE (fr) files
 for more information on the license.
-
