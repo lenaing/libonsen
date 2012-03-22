@@ -7,8 +7,9 @@ English
 libonsen
 --------
 
-libonsen is released under a CeCILL-C free software license. Please see the
-LICENSE file for more information on the license.
+The libonsen library and it's header files are released under a CeCILL-C free
+software license.
+Please see the LICENSE file for more information on the license.
 http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
 
 libiconv
@@ -531,9 +532,9 @@ Français
 libonsen
 --------
 
-La librairie libonsen est soumise à la licence française de logiciel libre 
-CeCILL-C. Veuillez lire le fichier LICENCE pour plus d'information sur la 
-licence.
+La librairie libonsen ainsi que ses fichiers d'en-tête sont soumis à la licence
+française de logiciel libre CeCILL-C.
+Veuillez lire le fichier LICENCE pour plus d'information sur la licence.
 
 Vous pouvez aussi lire la version HTML de la licence sur le site internet
 suivant :
