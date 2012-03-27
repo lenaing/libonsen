@@ -135,7 +135,19 @@ onsen_str_chr_replace(char *szSource, const char cOld, const char cNew)
     }
 }
 
+int
+onsen_str_is_slashed(const char *str)
+{
+    char *lastChar;
+    unsigned int pos;
 
+    lastChar = strrchr(str, '/');
+    pos = (unsigned int)(lastChar - str + 1);
+    if ((NULL == lastChar) || (pos != strlen(str))) {
+        return 0;
+    }
+    return 1;
+}
 
 
 

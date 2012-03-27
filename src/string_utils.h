@@ -46,5 +46,6 @@ char *onsen_build_filename_with_extension(const char *,
                                           const char *);
 char *onsen_strdup(const char *);
 void onsen_str_chr_replace(char *, const char, const char);
+int onsen_str_is_slashed(const char *);
 
 #endif /* __ONSEN_STRING_UTILS_H */
