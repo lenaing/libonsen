@@ -55,12 +55,15 @@ onsen_free_archive_info(OnsenArchiveInfo_t *pInfo)
     int i;
 
     if (NULL != pInfo) {
-        for (i = 0; i < (pInfo->iArchiveEntriesCount + 1); i++) {
-            if (NULL != pInfo->a_pArchiveEntries[i]) {
-                onsen_free_archive_entry(pInfo->a_pArchiveEntries[i]);
+
+        if (NULL != pInfo->a_pArchiveEntries) {
+            for (i = 0; i < (pInfo->iArchiveEntriesCount + 1); i++) {
+                if (NULL != pInfo->a_pArchiveEntries[i]) {
+                    onsen_free_archive_entry(pInfo->a_pArchiveEntries[i]);
+                }
             }
+            onsen_free(pInfo->a_pArchiveEntries);
         }
-        onsen_free(pInfo->a_pArchiveEntries);
         pInfo->lArchiveFileSize = 0;
         onsen_free(pInfo);
     }
