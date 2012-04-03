@@ -41,7 +41,7 @@
 typedef struct _OnsenArchiveEntry_s OnsenArchiveEntry_t;
 struct _OnsenArchiveEntry_s
 {
-    unsigned char *szFilename;              /* Entry filename.                */
+    char *szFilename;                       /* Entry filename.                */
     int iOffset;                            /* Entry file offset in archive.  */
     int iSize;                              /* Entry full file size.          */
     int iCompressedSize;                    /* Entry compressed file size.    */

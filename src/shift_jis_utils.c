@@ -60,7 +60,7 @@ onsen_are_shift_jis_bytes(unsigned char cFrst, unsigned char cScnd)
 }
 
 int
-onsen_is_shift_jis(const unsigned char *szMaybeShiftJIS)
+onsen_is_shift_jis(const char *szMaybeShiftJIS)
 {
     int iStatus;
     int iCount;
@@ -72,7 +72,7 @@ onsen_is_shift_jis(const unsigned char *szMaybeShiftJIS)
 
     iStatus = 1;
     iCount = 0;
-    iLen = strlen((char *)szMaybeShiftJIS);
+    iLen = strlen(szMaybeShiftJIS);
 
     do {
         cFirst = szMaybeShiftJIS[iCount];
@@ -85,7 +85,7 @@ onsen_is_shift_jis(const unsigned char *szMaybeShiftJIS)
 }
 
 char *
-onsen_shift_jis2utf8 (iconv_t pIconv, unsigned char *szShiftJIS)
+onsen_shift_jis2utf8 (iconv_t pIconv, char *szShiftJIS)
 {
     size_t rc;
     size_t iLen;
@@ -96,7 +96,7 @@ onsen_shift_jis2utf8 (iconv_t pIconv, unsigned char *szShiftJIS)
     assert(NULL != pIconv);
     assert(NULL != szShiftJIS);
 
-    iLen = strlen((char *)szShiftJIS);
+    iLen = strlen(szShiftJIS);
     if (!iLen) {
         onsen_err_warning("Iconv: Input string is empty.");
         return '\0';

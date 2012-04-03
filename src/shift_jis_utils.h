@@ -40,7 +40,7 @@
 
 int onsen_is_shift_jis_first_byte(unsigned char);
 int onsen_are_shift_jis_bytes(unsigned char, unsigned char);
-int onsen_is_shift_jis(const unsigned char *);
-char *onsen_shift_jis2utf8(iconv_t, unsigned char *);
+int onsen_is_shift_jis(const char *);
+char *onsen_shift_jis2utf8(iconv_t, char *);
 
 #endif /* __ONSEN_SHIFT_JIS_UTILS_H */
