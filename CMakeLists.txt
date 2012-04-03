@@ -82,7 +82,7 @@ CONFIGURE_FILE(
     "${PROJECT_SOURCE_DIR}/src/config.h"
 )
 
-ADD_DEFINITIONS(-W -Wall -ansi -pedantic -fPIC)
+ADD_DEFINITIONS(-W -Wall -ansi -pedantic -fPIC -g3)
 ADD_LIBRARY(onsen STATIC ${libonsen_SRCS})
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
