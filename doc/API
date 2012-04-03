@@ -105,6 +105,8 @@ Archive Plugin
     |               |   0               Offset to start reading from|
     |               |   1               Data size                   |
     |               |                                               |
+    | szSrcFilename | Source archive filename                       |
+    |               |                                               |
     | pArchiveInfo  | Allocated structure to fill with archive      |
     |               | information                                   |
     -----------------------------------------------------------------
@@ -137,6 +139,8 @@ Archive Plugin
     |               |   1               Data size                   |
     |               |                                               |
     | szFilename    | Searched filename in archive                  |
+    |               |                                               |
+    | szSrcFilename | Source archive filename                       |
     |               |                                               |
     | pEntry        | Allocated structure to fill with archive      |
     |               | file information                              |
