@@ -33,48 +33,53 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#include "picture.h"
+#include "picture_importer_plugin.h"
 
-OnsenDIBHeader_t *
-onsen_new_dib_header()
+OnsenPictureImporterPlugin_t *
+onsen_new_picture_importer_plugin()
 {
-    OnsenDIBHeader_t *pDIBHeader;
+    OnsenPictureImporterPlugin_t *pPlugin;
 
-    pDIBHeader = onsen_malloc(sizeof(OnsenDIBHeader_t));
+    pPlugin = onsen_malloc(sizeof(OnsenPictureImporterPlugin_t));
+    pPlugin->getPictureInfo = NULL;
 
-    return pDIBHeader;
+    return pPlugin;
 }
 
 void
-onsen_free_dib_header(OnsenDIBHeader_t *pDIBHeader)
+onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *pPlugin)
 {
-    if (NULL != pDIBHeader) {
-        onsen_free(pDIBHeader);
+    if (NULL != pPlugin) {
+        onsen_free(pPlugin);
     }
 }
 
-OnsenPictureInfo_t *
-onsen_new_picture_info()
+int
+onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *pPlugin)
 {
-    OnsenPictureInfo_t *pInfo;
+    void *pFun;
+    OnsenPictureImporterPlugin_t *pInstance;
 
-    pInfo = onsen_malloc(sizeof(OnsenPictureInfo_t));
-    pInfo->pDIBHeader = onsen_new_dib_header();
-    pInfo->a_cColorMap = NULL;
+    assert(NULL != pPlugin);
 
-    return pInfo;
-}
-
-void
-onsen_free_picture_info(OnsenPictureInfo_t *pInfo)
-{
-    if (NULL != pInfo) {
-
-        if (NULL != pInfo->a_cColorMap) {
-            onsen_free(pInfo->a_cColorMap);
-        }
-
-        onsen_free_dib_header(pInfo->pDIBHeader);
-        onsen_free(pInfo);
+    /* Library already loaded. */
+    if (pPlugin->bLibraryLoaded) {
+        onsen_err_warning("Plugin %s already loaded.", pPlugin->szName);
+        return 0;
     }
+
+    pInstance = pPlugin->pInstance;
+    if (NULL == pInstance) {
+        return 1;
+    }
+
+    pFun = dlsym(pPlugin->pLibrary, "onsen_get_picture_info");
+    pPlugin->szLibraryError = dlerror();
+    if (NULL != pPlugin->szLibraryError) {
+        return 2;
+    }
+    memcpy(&(pInstance->getPictureInfo), &pFun,
+                sizeof(pInstance->getPictureInfo));
+
+    return 0;
 }

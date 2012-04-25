@@ -50,6 +50,7 @@ SET(
         src/file_utils.c
         src/iconv_utils.c
         src/picture.c
+        src/picture_importer_plugin.c
         src/plugin.c
         src/shift_jis_utils.c
         src/string_utils.c
@@ -66,6 +67,7 @@ SET(
         src/file_utils.h
         src/iconv_utils.h
         src/picture.h
+        src/picture_importer_plugin.h
         src/plugin.h
         src/shift_jis_utils.h
         src/string_utils.h

@@ -64,6 +64,7 @@ struct _OnsenPictureInfo_s
 
 OnsenDIBHeader_t *onsen_new_dib_header();
 void onsen_free_dib_header(OnsenDIBHeader_t *);
+
 OnsenPictureInfo_t *onsen_new_picture_info();
 void onsen_free_picture_info(OnsenPictureInfo_t *);
 

@@ -35,6 +35,7 @@
  */
 #include "plugin.h"
 #include "archive_plugin.h"
+#include "picture_importer_plugin.h"
 
 OnsenPlugin_t *
 onsen_new_plugin()
@@ -283,7 +284,20 @@ onsen_new_plugin_instance(OnsenPlugin_t *pPlugin)
                 onsen_free_archive_plugin(pInstance);
                 return 1;
             }
-            
+        } break;
+        case ONSEN_PLUGIN_PICTURE_IMPORTER : {
+            pInstance = onsen_new_picture_importer_plugin();
+            if (NULL == pInstance) {
+                onsen_err_ko("Failed to instantiate plugin...");
+                return 1;
+            }
+            pPlugin->pInstance = pInstance;
+            rc = onsen_picture_importer_plugin_load_funcs(pPlugin);
+            if (0 != rc) {
+                onsen_err_ko("Failed to load mandatory functions...");
+                onsen_free_picture_importer_plugin(pInstance);
+                return 1;
+            }
         } break;
 
         default : {

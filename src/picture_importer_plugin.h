@@ -33,48 +33,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
+#ifndef __ONSEN_PICTURE_IMPORTER_PLUGIN_H
+#define __ONSEN_PICTURE_IMPORTER_PLUGIN_H
+
+#include "plugin.h"
 #include "picture.h"
 
-OnsenDIBHeader_t *
-onsen_new_dib_header()
+typedef struct _OnsenPictureImporterPlugin_s OnsenPictureImporterPlugin_t;
+struct _OnsenPictureImporterPlugin_s
 {
-    OnsenDIBHeader_t *pDIBHeader;
+    /* Mandatory picture importer functions.        */
+    int (*getPictureInfo)(int, void *, long, char *, OnsenPictureInfo_t *);
+};
 
-    pDIBHeader = onsen_malloc(sizeof(OnsenDIBHeader_t));
+OnsenPictureImporterPlugin_t *onsen_new_picture_importer_plugin(void);
+void onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
 
-    return pDIBHeader;
-}
+int onsen_load_picture_importer_plugin(OnsenPictureImporterPlugin_t *,
+                                        const char *);
+int onsen_unload_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
+int onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *);
 
-void
-onsen_free_dib_header(OnsenDIBHeader_t *pDIBHeader)
-{
-    if (NULL != pDIBHeader) {
-        onsen_free(pDIBHeader);
-    }
-}
-
-OnsenPictureInfo_t *
-onsen_new_picture_info()
-{
-    OnsenPictureInfo_t *pInfo;
-
-    pInfo = onsen_malloc(sizeof(OnsenPictureInfo_t));
-    pInfo->pDIBHeader = onsen_new_dib_header();
-    pInfo->a_cColorMap = NULL;
-
-    return pInfo;
-}
-
-void
-onsen_free_picture_info(OnsenPictureInfo_t *pInfo)
-{
-    if (NULL != pInfo) {
-
-        if (NULL != pInfo->a_cColorMap) {
-            onsen_free(pInfo->a_cColorMap);
-        }
-
-        onsen_free_dib_header(pInfo->pDIBHeader);
-        onsen_free(pInfo);
-    }
-}
+#endif /* __ONSEN_PICTURE_IMPORTER_PLUGIN_H */
