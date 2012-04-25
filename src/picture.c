@@ -33,13 +33,49 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#ifndef __ONSEN_GLOBALS_H
-#define __ONSEN_GLOBALS_H
+#include "picture.h"
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#endif /* __ONSEN_GLOBALS_H */
+OnsenDIBHeader_t *
+onsen_new_dib_header()
+{
+    OnsenDIBHeader_t *pDIBHeader;
+
+    pDIBHeader = onsen_malloc(sizeof(OnsenDIBHeader_t));
+
+    return pDIBHeader;
+}
+
+void
+onsen_free_dib_header(OnsenDIBHeader_t *pDIBHeader)
+{
+    if (NULL != pDIBHeader) {
+        onsen_free(pDIBHeader);
+    }
+}
+
+OnsenPicture_t *
+onsen_new_picture()
+{
+    OnsenPicture_t *pPicture;
+
+    pPicture = onsen_malloc(sizeof(OnsenPicture_t));
+    pPicture->pDIBHeader = onsen_new_dib_header();
+    pPicture->a_cColorMap = NULL;
+
+    return pPicture;
+}
+
+void
+onsen_free_picture(OnsenPicture_t *pPicture)
+{
+    if (NULL != pPicture) {
+
+        if (NULL != pPicture->a_cColorMap) {
+            onsen_free(pPicture->a_cColorMap);
+        }
+
+        onsen_free_dib_header(pPicture->pDIBHeader);
+        onsen_free(pPicture);
+    }
+}

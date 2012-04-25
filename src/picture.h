@@ -33,13 +33,38 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#ifndef __ONSEN_GLOBALS_H
-#define __ONSEN_GLOBALS_H
+#ifndef __ONSEN_PICTURE_H
+#define __ONSEN_PICTURE_H
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "utils.h"
 
-#endif /* __ONSEN_GLOBALS_H */
+typedef struct _OnsenDIBHeader_s OnsenDIBHeader_t;
+struct _OnsenDIBHeader_s
+{
+    int32_t  iBmpWidth;
+    int32_t  iBmpHeight;
+    uint16_t iNbColorPlanes;
+    uint16_t iNbBitsPerPixel;
+    uint32_t iCompressionType;
+    uint32_t iBmpSize;
+    int32_t  iHorizontalRes;
+    int32_t  iVerticalRes;
+    uint32_t iNbColorsInColorPalette;
+    uint32_t iNbImportantColors;
+    /* TODO　Bitfields */
+    /* TODO  Color spaces */
+};
+
+typedef struct _OnsenPicture_s OnsenPicture_t;
+struct _OnsenPicture_s
+{
+    OnsenDIBHeader_t *pDIBHeader;
+    char **a_cColorMap;
+};
+
+OnsenDIBHeader_t *onsen_new_dib_header();
+void onsen_free_dib_header(OnsenDIBHeader_t *);
+OnsenPicture_t *onsen_new_picture();
+void onsen_free_picture(OnsenPicture_t *);
+
+#endif /* __ONSEN_PICTURE_H */

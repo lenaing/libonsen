@@ -42,6 +42,8 @@ Any Plugin
 
           Here is an exemple : 01 A
                                 | +--- A : Archive plugin
+                                | +--- I : Picture Importer
+                                | +--- X : Picture eXporter
                                 +------*libonsen* API version no. (MAJOR, MINOR)
 
 + onsen_is_file_supported :

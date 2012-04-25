@@ -78,6 +78,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     char *szPluginName;
     char *szPluginVersion;
     char *szPluginAuthors;
+    char *szPluginType;
 
     assert(NULL != pPlugin);
     assert(NULL != szLibFilename);
@@ -130,7 +131,9 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
 
         /* Check plugin type */
         switch(api[2]) {
-            case ONSEN_PLUGIN_ARCHIVE : {
+            case ONSEN_PLUGIN_ARCHIVE :
+            case ONSEN_PLUGIN_PICTURE_IMPORTER :
+            case ONSEN_PLUGIN_PICTURE_EXPORTER : {
                 pPlugin->iType = api[2];
             } break;
             default : {
@@ -198,8 +201,22 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
         errno = EPLGMANFUN;
         return 1;
     }
-    onsen_out_ok("Loaded plugin %s %s%s.", pPlugin->szName, pPlugin->szVersion,
-                    pPlugin->szAuthors);
+
+    switch (pPlugin->iType) {
+        case ONSEN_PLUGIN_ARCHIVE : {
+            szPluginType = "Archive ";
+        } break;
+        case ONSEN_PLUGIN_PICTURE_IMPORTER : {
+            szPluginType = "Picture Importer ";
+        } break;
+        case ONSEN_PLUGIN_PICTURE_EXPORTER : {
+            szPluginType = "Picture eXporter ";
+        } break;
+        default : szPluginType = "";
+    }
+
+    onsen_out_ok("Loaded %splugin %s %s%s.", szPluginType, pPlugin->szName,
+                    pPlugin->szVersion, pPlugin->szAuthors);
     pPlugin->bLibraryLoaded = 1;
 
     return 0;
