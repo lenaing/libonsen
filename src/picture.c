@@ -54,28 +54,28 @@ onsen_free_dib_header(OnsenDIBHeader_t *pDIBHeader)
     }
 }
 
-OnsenPicture_t *
-onsen_new_picture()
+OnsenPictureInfo_t *
+onsen_new_picture_info()
 {
-    OnsenPicture_t *pPicture;
+    OnsenPictureInfo_t *pInfo;
 
-    pPicture = onsen_malloc(sizeof(OnsenPicture_t));
-    pPicture->pDIBHeader = onsen_new_dib_header();
-    pPicture->a_cColorMap = NULL;
+    pInfo = onsen_malloc(sizeof(OnsenPictureInfo_t));
+    pInfo->pDIBHeader = onsen_new_dib_header();
+    pInfo->a_cColorMap = NULL;
 
-    return pPicture;
+    return pInfo;
 }
 
 void
-onsen_free_picture(OnsenPicture_t *pPicture)
+onsen_free_picture_info(OnsenPictureInfo_t *pInfo)
 {
-    if (NULL != pPicture) {
+    if (NULL != pInfo) {
 
-        if (NULL != pPicture->a_cColorMap) {
-            onsen_free(pPicture->a_cColorMap);
+        if (NULL != pInfo->a_cColorMap) {
+            onsen_free(pInfo->a_cColorMap);
         }
 
-        onsen_free_dib_header(pPicture->pDIBHeader);
-        onsen_free(pPicture);
+        onsen_free_dib_header(pInfo->pDIBHeader);
+        onsen_free(pInfo);
     }
 }
