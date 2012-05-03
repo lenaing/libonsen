@@ -321,6 +321,9 @@ onsen_free_plugin_instance(OnsenPlugin_t *pPlugin)
             case ONSEN_PLUGIN_ARCHIVE : {
                 onsen_free_archive_plugin(pPlugin->pInstance);
             } break;
+            case ONSEN_PLUGIN_PICTURE_IMPORTER : {
+                onsen_free_picture_importer_plugin(pPlugin->pInstance);
+            } break;
             default : {
                 /* Should never happen. */
             };
