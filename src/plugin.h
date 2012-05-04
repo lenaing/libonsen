@@ -84,7 +84,7 @@ struct _OnsenPlugin_s
 
     /* Mandatory plugin functions. */
     int (*getPluginInfo)(int, char *, int);
-    int (*isFileSupported)(int, void *, long);
+    int (*isFileSupported)(int, char *, void *, long);
 };
 
 OnsenPlugin_t *onsen_new_plugin(void);

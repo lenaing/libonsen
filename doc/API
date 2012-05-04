@@ -50,7 +50,8 @@ Any Plugin
 
     Check if the given file is supported by the plugin.
 
-    Prototype : int (*)(int iFileType, void *pFile, long lOffset)
+    Prototype : int (*)(int iFileType, char *szFilename, void *pFile,
+                        long lOffset)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
@@ -59,8 +60,10 @@ Any Plugin
     |               |   0               Disk file                   |
     |               |   1               Memory file                 |
     |               |                                               |
+    | szFilename    | Filename                                      |
+    |               |                                               |
     | pFile         | File type         Meaning                     |
-    |               |   0               Filename                    |
+    |               |   0               NULL                        |
     |               |   1               Pointer to memory file      |
     |               |                                               |
     | lOffset       | File type         Meaning                     |
@@ -88,9 +91,9 @@ Archive Plugin
 
     Retrieve information about given archive.
 
-    Prototype : int onsen_get_archive_info(int iFileType, void *pFile,
-                                           long lOffset,
-                                           OnsenArchiveInfo_t *pArchiveInfo)
+    Prototype : int onsen_get_archive_info(int iFileType, long lOffset,
+                                            char *szSrcFilename, void *pFile,
+                                            OnsenArchiveInfo_t *pArchiveInfo)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
@@ -99,15 +102,15 @@ Archive Plugin
     |               |   0               Disk file                   |
     |               |   1               Memory file                 |
     |               |                                               |
-    | pFile         | File type         Meaning                     |
-    |               |   0               Filename                    |
-    |               |   1               Pointer to memory file      |
-    |               |                                               |
     | lOffset       | File type         Meaning                     |
     |               |   0               Offset to start reading from|
     |               |   1               Data size                   |
     |               |                                               |
     | szSrcFilename | Source archive filename                       |
+    |               |                                               |
+    | pFile         | File Type         Meaning                     |
+    |               |   0               NULL                        |
+    |               |   1               Pointer to memory file      |
     |               |                                               |
     | pArchiveInfo  | Allocated structure to fill with archive      |
     |               | information                                   |
@@ -121,9 +124,10 @@ Archive Plugin
 
     Retrieve information about an archive file.
 
-    Prototype : int onsen_get_file_info(int iFileType, void *pFile,
-                                        long lOffset, char *szFilename,
-                                        OnsenArchiveEntry_t *pEntry)
+    Prototype : int onsen_get_file_info(int iFileType, long lOffset,
+                                         char *szFilename,
+                                         char *szSrcFilename, void *pFile,
+                                         OnsenArchiveEntry_t *pEntry)
 
     -----------------------------------------------------------------
     | Arguments     | Description                                   |
@@ -132,9 +136,6 @@ Archive Plugin
     |               |   0               Disk file                   |
     |               |   1               Memory file                 |
     |               |                                               |
-    | pFile         | File type         Meaning                     |
-    |               |   0               Filename                    |
-    |               |   1               Pointer to memory file      |
     |               |                                               |
     | lOffset       | File type         Meaning                     |
     |               |   0               Offset to start reading from|
@@ -143,6 +144,10 @@ Archive Plugin
     | szFilename    | Searched filename in archive                  |
     |               |                                               |
     | szSrcFilename | Source archive filename                       |
+    |               |                                               |
+    | pFile         | File type         Meaning                     |
+    |               |   0               NULL                        |
+    |               |   1               Pointer to memory file      |
     |               |                                               |
     | pEntry        | Allocated structure to fill with archive      |
     |               | file information                              |

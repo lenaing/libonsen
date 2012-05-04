@@ -52,9 +52,9 @@ typedef struct _OnsenArchivePlugin_s OnsenArchivePlugin_t;
 struct _OnsenArchivePlugin_s
 {
     /* Mandatory archive functions.        */
-    int (*getArchiveInfo)(int, void *, long, char *, OnsenArchiveInfo_t *);
-    int (*getFileInfo)(int, void *, long, char *, char *,
-                       OnsenArchiveEntry_t *);
+    int (*getArchiveInfo)(int, long, char *, void *, OnsenArchiveInfo_t *);
+    int (*getFileInfo)(int, long, char *, char *, void *,
+                        OnsenArchiveEntry_t *);
 
     /* Optional archive functions.        */
     int (*writeFile)(int, void *, long, int, void *, long,
