@@ -41,6 +41,8 @@ onsen_basedir(char *szSource)
     char *szTemp;
     char *szBasedir;
 
+    assert(NULL != szSource);
+
     szTemp = onsen_strdup(szSource);
     szBasedir = onsen_strdup(dirname(szTemp));
     onsen_free(szTemp);
@@ -51,6 +53,9 @@ onsen_basedir(char *szSource)
 char *
 onsen_build_filename(const char *szPath, const char *szFilename)
 {
+    assert(NULL != szPath);
+    assert(NULL != szFilename);
+
     return onsen_build_filename_with_extension(szPath, szFilename, NULL);
 }
 
@@ -83,7 +88,7 @@ onsen_build_filename_with_extension(const char *szPath, const char *szFilename,
     }
 
     szBuiltFilename = onsen_calloc(iPathLen + iPadding + iFilenameLen
-                                   + iFileExtensionLen +1, sizeof(char));
+                                   + iFileExtensionLen + 1, sizeof(char));
 
     /* Copy path. */
     strncpy(szBuiltFilename, szPath, iPathLen);
@@ -127,6 +132,8 @@ onsen_str_chr_replace(char *szSource, const char cOld, const char cNew)
 {
     char *pSource = szSource;
 
+    assert(NULL != szSource);
+
     while (*pSource) {
         if (*pSource == cOld) {
             *pSource = cNew;
@@ -140,6 +147,8 @@ onsen_str_is_slashed(const char *str)
 {
     char *lastChar;
     unsigned int pos;
+
+    assert(NULL != str);
 
     lastChar = strrchr(str, '/');
     pos = (unsigned int)(lastChar - str + 1);

@@ -46,16 +46,13 @@ onsen_new_plugin()
 
     pPlugin->bLibraryOpened = 0;
     pPlugin->bLibraryLoaded = 0;
-    pPlugin->pLibrary = NULL;
+    pPlugin->pLibrary       = NULL;
     pPlugin->szLibraryError = NULL;
-
-    pPlugin->iType = ONSEN_PLUGIN_UNSUPPORTED;
-
-    pPlugin->szName = NULL;
-    pPlugin->szVersion = NULL;
-    pPlugin->szAuthors = NULL;
-
-    pPlugin->pInstance = NULL;
+    pPlugin->iType          = ONSEN_PLUGIN_UNSUPPORTED;
+    pPlugin->szName         = NULL;
+    pPlugin->szVersion      = NULL;
+    pPlugin->szAuthors      = NULL;
+    pPlugin->pInstance      = NULL;
 
     return pPlugin;
 }
@@ -63,6 +60,8 @@ onsen_new_plugin()
 void
 onsen_free_plugin(OnsenPlugin_t *pPlugin)
 {
+    assert(NULL != pPlugin);
+
     if (NULL != pPlugin) {
         onsen_unload_plugin(pPlugin);
         onsen_free(pPlugin);
@@ -227,6 +226,8 @@ int
 onsen_unload_plugin(OnsenPlugin_t *pPlugin)
 {
     int rc = 0;
+
+    assert(NULL != pPlugin);
 
     if (NULL != pPlugin) {
         if (NULL != pPlugin->szName) {

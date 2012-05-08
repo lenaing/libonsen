@@ -49,6 +49,8 @@ onsen_new_picture_importer_plugin()
 void
 onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *pPlugin)
 {
+    assert(NULL != pPlugin);
+
     if (NULL != pPlugin) {
         onsen_free(pPlugin);
     }

@@ -48,6 +48,8 @@ onsen_new_dib_header()
 void
 onsen_free_dib_header(OnsenDIBHeader_t *pDIBHeader)
 {
+    assert(NULL != pDIBHeader);
+
     if (NULL != pDIBHeader) {
         onsen_free(pDIBHeader);
     }
@@ -68,6 +70,8 @@ onsen_new_picture_info()
 void
 onsen_free_picture_info(OnsenPictureInfo_t *pInfo)
 {
+    assert(NULL != pInfo);
+
     if (NULL != pInfo) {
 
         if (NULL != pInfo->a_cColorMap) {

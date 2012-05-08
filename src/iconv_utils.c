@@ -45,6 +45,7 @@ onsen_iconv_init(const char * szOutCharset, const char * szInCharset)
 
     pIconv = iconv_open(szOutCharset, szInCharset);
     if (-1 == (intptr_t)pIconv) {
+        perror("iconv");
         if (EINVAL == errno) {
             onsen_err_ko("Conversion from '%s' to '%s' is not supported.",
                   szOutCharset, szInCharset);
@@ -65,10 +66,9 @@ onsen_iconv_cleanup(iconv_t pIconv)
     assert(NULL != pIconv);
 
     rc = iconv_close(pIconv);
-    if (rc) {
-        onsen_err_ko("Iconv closing failure");
-        perror("iconv_close");
-        return rc;
+    if (-1 == rc) {
+        perror("iconv");
+        onsen_err_ko("Iconv closing failure.");
     }
 
     return rc;
