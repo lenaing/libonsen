@@ -110,10 +110,10 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
 
     pDiskFile = onsen_malloc(sizeof(OnsenFile_t));
     pDiskFile->szFilename = szFilename;
-    pDiskFile->bIsMmaped = bIsMmaped;
-    pDiskFile->iFd = iFd;
-    pDiskFile->lFileSize = lFileSize;
-    pDiskFile->pData = pData;
+    pDiskFile->bIsMmaped  = bIsMmaped;
+    pDiskFile->iFd        = iFd;
+    pDiskFile->lFileSize  = lFileSize;
+    pDiskFile->pData      = pData;
     return pDiskFile;
 }
 
@@ -147,10 +147,17 @@ int onsen_mkdir(const char *szPath)
 {
     char aBuffer[256];
     char *p_aBuffer;
+    char *szNoPerms = "Insufficient permissions to create directory '%s'.";
+    char *szFailure = "Failed to create directory '%s'.";
     size_t len;
+    int n;
     int rc = 0;
 
-    strncpy(aBuffer, szPath, sizeof(aBuffer));
+    n = sizeof(aBuffer);
+    strncpy(aBuffer, szPath, n);
+    if (n > 0) {
+        aBuffer[n - 1] = '\0';
+    }
     len = strlen(aBuffer);
 
     if (aBuffer[len - 1] == '/') {
@@ -158,26 +165,43 @@ int onsen_mkdir(const char *szPath)
     }
 
     for (p_aBuffer = aBuffer; *p_aBuffer; p_aBuffer++) {
-        if(*p_aBuffer == '/') {
+        if (*p_aBuffer == '/') {
+
             *p_aBuffer = '\0';
-            if(strcmp("", aBuffer) && access(aBuffer, F_OK)) {
+
+            if (strcmp("", aBuffer)) {
+                rc = access(aBuffer, F_OK);
+                if (-1 == rc) {
+                    perror("access");
+                    onsen_err_ko(szNoPerms, aBuffer);
+                    return 0;
+                }
+
                 rc = mkdir(aBuffer, S_IRWXU);
-                if (0 != rc) {
-                    onsen_err_ko("Failed to create directory '%s'.", aBuffer);
+                if (-1 == rc) {
                     perror("mkdir");
+                    onsen_err_ko(szFailure, aBuffer);
+                    return 0;
                 }
             }
+
             *p_aBuffer = '/';
         }
     }
 
-    if (access(aBuffer, F_OK)) {
-        rc = mkdir(aBuffer, S_IRWXU);
-        if (0 != rc) {
-            onsen_err_ko("Failed to create directory '%s'.", aBuffer);
-            perror("mkdir");
-        }
+    rc = access(aBuffer, F_OK);
+    if (-1 == rc) {
+        perror("access");
+        onsen_err_ko(szNoPerms, aBuffer);
+        return 0;
     }
 
-    return rc;
+    rc = mkdir(aBuffer, S_IRWXU);
+    if (-1 == rc) {
+        perror("mkdir");
+        onsen_err_ko(szFailure, aBuffer);
+        return 0;
+    }
+
+    return 1;
 }

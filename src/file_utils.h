@@ -64,7 +64,6 @@ struct _OnsenFile_s {
     unsigned char *pData;
 };
 
-
 OnsenFile_t *onsen_new_disk_file(const char *, enum OnsenFileMode, long);
 void onsen_free_disk_file(OnsenFile_t *);
 
