@@ -105,19 +105,20 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                  int iDstType, void *szDstFile, long lDstFileSize,
                  OnsenWriteFileCallback pCallback, void *pData)
 {
-    OnsenFile_t *pSrcDiskFile;
     OnsenFile_t *pDstDiskFile;
+    int i = 0;
     int bError = 0;
-    unsigned char *pSrcData;
-    unsigned char *pDstData;
+    int iNbBytesRead = 0;
+    int iNbBytesToCopy = 0;
+    int iSrcFd;
+    long lOffset;
+    unsigned char *pSrcData = NULL;
+    unsigned char *pDstData = NULL;
+    unsigned char aBuffer[IO_BUFFER_SIZE];
 
     if (0 == iSrcType) {
         /* Disk file */
-        pSrcDiskFile = onsen_new_disk_file((const char *)szSrcFile, RDONLY, 0);
-        if (NULL == pSrcDiskFile) {
-            bError = 1;
-        }
-        pSrcData = pSrcDiskFile->pData;
+        iSrcFd = *(int *)szSrcFile;
     } else {
         /* Memory file */
         pSrcData = szSrcFile;
@@ -125,7 +126,9 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
 
     if (0 == iDstType) {
         /* Disk file */
-        pDstDiskFile = onsen_new_disk_file((const char *)szDstFile, WRONLY, lDstFileSize);
+        pDstDiskFile = onsen_new_disk_file((const char *)szDstFile,
+                                                            WRONLY,
+                                                            lDstFileSize);
         if (NULL == pDstDiskFile) {
             bError = 1;
         }
@@ -136,20 +139,107 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
     }
 
     if (0 == bError) {
-        if (NULL != pCallback) {
-            pCallback(100, 0, pData);
-        }
-        /* TODO : do buffered copy if disk files aren't mmaped */
-        memcpy(pDstData, pSrcData + lSrcOffset, lDstFileSize);
-        if (NULL != pCallback) {
-            pCallback(100, 100, pData);
+
+        if (NULL != pSrcData && NULL != pDstData) {
+            /* Memory -> Memory */
+            if (NULL != pCallback) {
+                pCallback(100, 0, pData);
+            }
+            memcpy(pDstData, pSrcData + lSrcOffset, lDstFileSize);
+            if (NULL != pCallback) {
+                pCallback(100, 100, pData);
+            }
+        } else if (NULL == pSrcData && NULL == pDstData) {
+            /* Disk -> Disk */
+            if (NULL != pCallback) {
+                pCallback(100, 0, pData);
+            }
+
+            lOffset = 0;
+            lseek(iSrcFd, lSrcOffset, SEEK_SET);
+            lseek(pDstDiskFile->iFd, 0, SEEK_SET);
+            while ((iNbBytesRead = read(iSrcFd,
+                                        &aBuffer,
+                                        IO_BUFFER_SIZE)) > 0) {
+
+                iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
+                                    ? lDstFileSize - lOffset
+                                    : iNbBytesRead;
+
+                write(pDstDiskFile->iFd, &aBuffer, iNbBytesToCopy);
+
+                lOffset += iNbBytesRead;
+                if (lOffset > lDstFileSize) {
+                    break;
+                }
+
+                if (NULL != pCallback) {
+                    pCallback(lDstFileSize, lOffset, pData);
+                }
+            }
+
+            if (NULL != pCallback) {
+                pCallback(100, 100, pData);
+            }
+        } else if (NULL == pSrcData) {
+            /* Disk -> Memory */
+            if (NULL != pCallback) {
+                pCallback(100, 0, pData);
+            }
+
+            lOffset = 0;
+            lseek(iSrcFd, lSrcOffset, SEEK_SET);
+            while ((iNbBytesRead = read(iSrcFd,
+                                        &aBuffer,
+                                        IO_BUFFER_SIZE)) > 0) {
+
+                iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
+                                    ? lDstFileSize - lOffset
+                                    : iNbBytesRead;
+
+                memcpy(pDstData + lOffset, &aBuffer, iNbBytesToCopy);
+
+                lOffset += iNbBytesRead;
+                if (lOffset > lDstFileSize) {
+                    break;
+                }
+
+                if (NULL != pCallback) {
+                    pCallback(lDstFileSize, lOffset, pData);
+                }
+            }
+
+            if (NULL != pCallback) {
+                pCallback(100, 100, pData);
+            }
+        } else if (NULL == pDstData) {
+            /* Memory -> Disk */
+            if (NULL != pCallback) {
+                pCallback(100, 0, pData);
+            }
+
+            i = 0;
+            while (i < lDstFileSize) {
+                if (NULL != pCallback) {
+                    pCallback(lDstFileSize, i, pData);
+                }
+
+                iNbBytesToCopy = (lDstFileSize < (i + IO_BUFFER_SIZE))
+                                    ? lDstFileSize - i
+                                    : IO_BUFFER_SIZE;
+                write(pDstDiskFile->iFd,
+                        pSrcData + lSrcOffset + i,
+                        iNbBytesToCopy);
+                i += IO_BUFFER_SIZE;
+            };
+
+            if (NULL != pCallback) {
+                pCallback(100, 100, pData);
+            }
         }
     }
 
-    /* Close disk files */
-    if (0 == iSrcType) {
-        onsen_free_disk_file(pSrcDiskFile);
-    }
+    /* Close destination disk file */
     if (0 == iDstType) {
         onsen_free_disk_file(pDstDiskFile);
     }

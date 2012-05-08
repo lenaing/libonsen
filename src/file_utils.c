@@ -85,13 +85,15 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
     }
 
     if (0 == bError) {
-        /* TODO : Only mmap when < MAX_FILE_SIZE */
-        iMmapProto = (eMode == WRONLY) ? PROT_WRITE : PROT_READ;
-        pData = mmap(NULL, lFileSize, iMmapProto, MAP_SHARED, iFd, 0);
-        if (MAP_FAILED == pData) {
-            perror("mmap");
-            onsen_err_ko("Failed to map file '%s' to memory.\n", szFilename);
-            bError = 1;
+        if (lFileSize <= MAX_MMAPED_FILE_SIZE) {
+            iMmapProto = (eMode == WRONLY) ? PROT_WRITE : PROT_READ;
+            pData = mmap(NULL, lFileSize, iMmapProto, MAP_SHARED, iFd, 0);
+            if (MAP_FAILED == pData) {
+                perror("mmap");
+                onsen_err_ko("Failed to map file '%s' to memory.\n",
+                                szFilename);
+                bError = 1;
+            }
         }
     }
 
@@ -148,11 +150,11 @@ int onsen_mkdir(const char *szPath)
     strncpy(aBuffer, szPath, sizeof(aBuffer));
     len = strlen(aBuffer);
 
-    if(aBuffer[len - 1] == '/') {
+    if (aBuffer[len - 1] == '/') {
         aBuffer[len - 1] = '\0';
     }
 
-    for(p_aBuffer = aBuffer; *p_aBuffer; p_aBuffer++) {
+    for (p_aBuffer = aBuffer; *p_aBuffer; p_aBuffer++) {
         if(*p_aBuffer == '/') {
             *p_aBuffer = '\0';
             if(strcmp("", aBuffer) && access(aBuffer, F_OK)) {
@@ -166,7 +168,7 @@ int onsen_mkdir(const char *szPath)
         }
     }
 
-    if(access(aBuffer, F_OK)) {
+    if (access(aBuffer, F_OK)) {
         rc = mkdir(aBuffer, S_IRWXU);
         if (0 != rc) {
             onsen_err_ko("Failed to create directory '%s'.", aBuffer);

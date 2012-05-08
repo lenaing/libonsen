@@ -63,7 +63,8 @@ Any Plugin
     | szFilename    | Filename                                      |
     |               |                                               |
     | pFile         | File type         Meaning                     |
-    |               |   0               NULL                        |
+    |               |   0               Pointer to the file         |
+    |               |                   descriptor                  |
     |               |   1               Pointer to memory file      |
     |               |                                               |
     | lOffset       | File type         Meaning                     |
@@ -109,7 +110,8 @@ Archive Plugin
     | szSrcFilename | Source archive filename                       |
     |               |                                               |
     | pFile         | File Type         Meaning                     |
-    |               |   0               NULL                        |
+    |               |   0               Pointer to the file         |
+    |               |                   descriptor                  |
     |               |   1               Pointer to memory file      |
     |               |                                               |
     | pArchiveInfo  | Allocated structure to fill with archive      |
@@ -146,7 +148,8 @@ Archive Plugin
     | szSrcFilename | Source archive filename                       |
     |               |                                               |
     | pFile         | File type         Meaning                     |
-    |               |   0               NULL                        |
+    |               |   0               Pointer to the file         |
+    |               |                   descriptor                  |
     |               |   1               Pointer to memory file      |
     |               |                                               |
     | pEntry        | Allocated structure to fill with archive      |
@@ -175,7 +178,8 @@ Archive Plugin
     |               |   1               Memory file                 |
     |               |                                               |
     | szSrcFile     | Source file type  Meaning                     |
-    |               |   0               Filename                    |
+    |               |   0               Pointer to the file         |
+    |               |                   descriptor                  |
     |               |   1               Pointer to memory file      |
     |               |                                               |
     | lSrcOffset    | File type         Meaning                     |

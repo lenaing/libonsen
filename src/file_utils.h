@@ -47,6 +47,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#define MAX_MMAPED_FILE_SIZE 104857600  /* 100 Mo */
+#define IO_BUFFER_SIZE 4096
+
 enum OnsenFileMode {
     RDONLY,
     WRONLY
