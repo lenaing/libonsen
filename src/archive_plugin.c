@@ -35,8 +35,6 @@
  */
 #include "archive_plugin.h"
 
-#define BUFFER_SIZE 4096
-
 OnsenArchivePlugin_t *
 onsen_new_archive_plugin()
 {
@@ -92,7 +90,7 @@ onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
     }
     memcpy(&(pInstance->getFileInfo), &pFun, sizeof(pInstance->getFileInfo));
 
-    /* Optional functions */
+    /* Optional function */
     pFun = dlsym(pPlugin->pLibrary, "onsen_write_file");
     pPlugin->szLibraryError = dlerror();
     if (NULL == pPlugin->szLibraryError) {
@@ -107,49 +105,54 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                  int iDstType, void *szDstFile, long lDstFileSize,
                  OnsenWriteFileCallback pCallback, void *pData)
 {
-    char *srcData;
-    char *dstData;
-    long lSrcFileSize;
-    int fdSrcFile;
-    int fdDstFile;
+    OnsenFile_t *pSrcDiskFile;
+    OnsenFile_t *pDstDiskFile;
+    int bError = 0;
+    unsigned char *pSrcData;
+    unsigned char *pDstData;
 
     if (0 == iSrcType) {
         /* Disk file */
-        fdSrcFile = open((const char *)szSrcFile, O_RDONLY);
-        lSrcFileSize = lseek(fdSrcFile, 0, SEEK_END);
-        srcData = mmap(NULL, lSrcFileSize, PROT_READ, MAP_SHARED, fdSrcFile, 0);
+        pSrcDiskFile = onsen_new_disk_file((const char *)szSrcFile, RDONLY, 0);
+        if (NULL == pSrcDiskFile) {
+            bError = 1;
+        }
+        pSrcData = pSrcDiskFile->pData;
     } else {
         /* Memory file */
-        srcData = szSrcFile;
+        pSrcData = szSrcFile;
     }
 
     if (0 == iDstType) {
         /* Disk file */
-        fdDstFile = open((const char *)szDstFile, O_RDWR|O_CREAT|O_TRUNC, 0644);
-        pwrite(fdDstFile, "", 1, lDstFileSize - 1);
-        dstData = mmap(NULL, lDstFileSize, PROT_WRITE, MAP_SHARED, fdDstFile, 0);
+        pDstDiskFile = onsen_new_disk_file((const char *)szDstFile, WRONLY, lDstFileSize);
+        if (NULL == pDstDiskFile) {
+            bError = 1;
+        }
+        pDstData = pDstDiskFile->pData;
     } else {
         /* Memory file */
-        dstData = szDstFile;
+        pDstData = szDstFile;
     }
 
-    if (NULL != pCallback) {
-        pCallback(100, 0, pData);
-    }
-    memcpy(dstData, srcData + lSrcOffset, lDstFileSize);
-    if (NULL != pCallback) {
-        pCallback(100, 100, pData);
+    if (0 == bError) {
+        if (NULL != pCallback) {
+            pCallback(100, 0, pData);
+        }
+        /* TODO : do buffered copy if disk files aren't mmaped */
+        memcpy(pDstData, pSrcData + lSrcOffset, lDstFileSize);
+        if (NULL != pCallback) {
+            pCallback(100, 100, pData);
+        }
     }
 
     /* Close disk files */
     if (0 == iSrcType) {
-        munmap(srcData, lSrcFileSize);
-        close(fdSrcFile);
+        onsen_free_disk_file(pSrcDiskFile);
     }
     if (0 == iDstType) {
-        munmap(dstData, lDstFileSize);
-        close(fdDstFile);
+        onsen_free_disk_file(pDstDiskFile);
     }
 
-    return 1;
+    return bError;
 }

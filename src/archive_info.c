@@ -64,7 +64,6 @@ onsen_free_archive_info(OnsenArchiveInfo_t *pInfo)
             }
             onsen_free(pInfo->a_pArchiveEntries);
         }
-        pInfo->lArchiveFileSize = 0;
         onsen_free(pInfo);
     }
 }

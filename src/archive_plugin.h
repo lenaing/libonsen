@@ -36,15 +36,10 @@
 #ifndef __ONSEN_ARCHIVE_PLUGIN_H
 #define __ONSEN_ARCHIVE_PLUGIN_H
 
-#ifndef _XOPEN_SOURCE
-    #define _XOPEN_SOURCE 500
-#endif
 #include "archive_entry.h"
 #include "archive_info.h"
 #include "file_utils.h"
 #include "plugin.h"
-#include <fcntl.h>
-#include <sys/mman.h>
 
 typedef void (*OnsenWriteFileCallback)(int , int , void *);
 

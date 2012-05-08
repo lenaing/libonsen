@@ -35,228 +35,107 @@
  */
 #include "file_utils.h"
 
-FILE *
-onsen_open_file(const char *szFilename, const char *szMode)
+OnsenFile_t *
+onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
+                        long lFileSize)
 {
-    FILE *pFile;
+    OnsenFile_t *pDiskFile;
+    int rc;
+    int bError = 0;
+    int iFd;
+    int iMmapProto;
+    unsigned char *pData = NULL;
 
-    assert(NULL != szFilename);
-    assert(NULL != szMode);
+    switch (eMode) {
+        case WRONLY : {
+            iFd = open(szFilename, O_RDWR|O_CREAT|O_TRUNC, 0644);
+        } break;
+        case RDONLY :
+        default : {
+            iFd = open(szFilename, O_RDONLY);
+        } break;
+    }
 
-    if (NULL == szFilename) {
-        onsen_err_ko("Attempted to open a file with a NULL filename.");
+    if (-1 == iFd) {
+        perror("open");
+        onsen_err_ko("Failed to open file '%s'.\n", szFilename);
         return NULL;
     }
 
-    if (NULL == szMode) {
-        onsen_err_ko("Attempted to open a file with a NULL mode.");
+    switch (eMode) {
+        case WRONLY : {
+            rc = pwrite(iFd, "", 1, lFileSize - 1);
+            if (-1 == rc) {
+                perror("pwrite");
+                onsen_err_ko("Failed to grow file '%s' to size %ld.\n",
+                                szFilename,
+                                lFileSize);
+                bError = 1;
+            }
+        } break;
+        case RDONLY :
+        default : {
+            lFileSize = lseek(iFd, 0, SEEK_END);
+            if (-1 == lFileSize) {
+                perror("lseek");
+                onsen_err_ko("Failed to get file size of '%s'.\n", szFilename);
+                bError = 1;
+            }
+        } break;
+    }
+
+    if (0 == bError) {
+        /* TODO : Only mmap when < MAX_FILE_SIZE */
+        iMmapProto = (eMode == WRONLY) ? PROT_WRITE : PROT_READ;
+        pData = mmap(NULL, lFileSize, iMmapProto, MAP_SHARED, iFd, 0);
+        if (MAP_FAILED == pData) {
+            perror("mmap");
+            onsen_err_ko("Failed to map file '%s' to memory.\n", szFilename);
+            bError = 1;
+        }
+    }
+
+    if (bError) {
+        rc = close(iFd);
+        if (-1 == rc) {
+            perror("close");
+            onsen_err_ko("Failed to close file '%s'.\n", szFilename);
+        }
         return NULL;
     }
 
-    pFile = fopen(szFilename, szMode);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Failed to open '%s'.", szFilename);
-        perror("fopen");
-    }
-
-    return pFile;
-}
-
-int
-onsen_close_file(FILE *pFile)
-{
-    int rc = 0;
-
-    assert(NULL != pFile);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to close an invalid file pointer.");
-        return -1;
-    }
-
-    rc = fclose(pFile);
-    if (EOF == rc) {
-        onsen_err_ko("Failed to close file.");
-        perror("fclose");
-    }
-
-    return rc;
-}
-
-char
-onsen_file_read_byte(FILE *pFile)
-{
-    char c;
-    size_t rc;
-
-    assert(NULL != pFile);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to read a byte through invalid file pointer.");
-    }
-
-    rc = fread(&c, sizeof(char), 1, pFile);
-    if (rc != 1) {
-        onsen_err_warning("Failed to read a byte in file.");
-        perror("fread");
-    }
-
-    return c;
-}
-
-int
-onsen_file_read_int(FILE *pFile)
-{
-    int i;
-    size_t rc;
-
-    assert(NULL != pFile);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to read an int through invalid file pointer.");
-    }
-
-    rc = fread(&i, sizeof(int), 1, pFile);
-    if (rc != 1) {
-        onsen_err_warning("Failed to read an int in file.");
-        perror("fread");
-    }
-
-    return i;
-}
-
-short
-onsen_file_read_short(FILE *pFile)
-{
-    short s;
-    size_t rc;
-
-    assert(NULL != pFile);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to read a short through invalid file pointer.");
-    }
-
-    rc = fread(&s, sizeof(short), 1, pFile);
-    if (rc != 1) {
-        onsen_err_warning("Failed to read a short in file.");
-        perror("fread");
-    }
-
-    return s;
-}
-
-long
-onsen_file_read_long(FILE *pFile)
-{
-    long l;
-    size_t rc;
-
-    assert(NULL != pFile);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to read a long through invalid file pointer.");
-    }
-
-    rc = fread(&l, sizeof(long), 1, pFile);
-    if (rc != 1) {
-        onsen_err_warning("Failed to read a long in file.");
-        perror("fread");
-    }
-
-    return l;
-}
-
-
-long
-onsen_get_file_size(FILE *pFile)
-{
-    long lSize;
-    int rc = 0;
-
-    assert(NULL != pFile);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to get the size through invalid file pointer.");
-        return -1;
-    }
-
-    rc = fseek(pFile, 0, SEEK_END);
-    if (0 != rc) {
-        onsen_err_ko("Failed to seek to end of file.");
-        perror("fseek");
-        return -1;
-    }
-
-    lSize = ftell(pFile);
-    if (-1 == lSize) {
-        onsen_err_ko("Failed to get file size.");
-        perror("ftell");
-        return -1;
-    }
-
-    return lSize;
+    pDiskFile = onsen_malloc(sizeof(OnsenFile_t));
+    pDiskFile->szFilename = szFilename;
+    pDiskFile->iFd = iFd;
+    pDiskFile->lFileSize = lFileSize;
+    pDiskFile->pData = pData;
+    return pDiskFile;
 }
 
 void
-onsen_file_rewind(FILE *pFile)
+onsen_free_disk_file(OnsenFile_t *pDiskFile)
 {
-    rewind(pFile);
-}
+    int rc;
+    if (NULL != pDiskFile) {
 
-int
-onsen_file_goto(FILE *pFile, int iPos)
-{
-    int rc = 0;
+        if (NULL != pDiskFile->pData) {
+            /* File was mmaped */
+            rc = munmap(pDiskFile->pData, pDiskFile->lFileSize);
+            if (-1 == rc) {
+                perror("munmap");
+                onsen_err_ko("Failed to unmap file '%s' from memory.\n",
+                                pDiskFile->szFilename);
+            }
+        }
 
-    assert(NULL != pFile);
-    assert(0 <= iPos);
+        rc = close(pDiskFile->iFd);
+        if (-1 == rc) {
+            perror("close");
+            onsen_err_ko("Failed to close file '%s'.\n", pDiskFile->szFilename);
+        }
 
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to seek through invalid file pointer.");
-        return 1;
+        free(pDiskFile);
     }
-
-    if (0 > iPos) {
-        onsen_err_ko("Attempted to seek to a negative position.");
-        return 1;
-    }
-
-    rc = fseek(pFile, iPos, SEEK_SET);
-    if (0 != rc) {
-        onsen_err_warning("Failed to seek to pos %d (0x%04X) in file.", iPos);
-        perror("fseek");
-    }
-
-    return rc;
-}
-
-int
-onsen_file_skip(FILE *pFile, int iCount)
-{
-    int rc = 0;
-
-    assert(NULL != pFile);
-    assert(0 < iCount);
-
-    if (NULL == pFile) {
-        onsen_err_ko("Attempted to skip bytes through invalid file pointer.");
-        return 1;
-    }
-
-    if (0 < iCount) {
-        onsen_err_ko("Attempted to skip a negative amount of bytes.");
-        return 1;
-    }
-
-    rc = fseek(pFile, iCount, SEEK_CUR);
-    if (0 != rc) {
-        onsen_err_warning("Failed to skip %d bytes.", iCount);
-        perror("fseek");
-    }
-
-    return rc;
 }
 
 int onsen_mkdir(const char *szPath)

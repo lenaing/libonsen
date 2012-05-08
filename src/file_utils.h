@@ -36,24 +36,33 @@
 #ifndef __ONSEN_FILE_UTILS_H
 #define __ONSEN_FILE_UTILS_H
 
+#ifndef _XOPEN_SOURCE
+    #define _XOPEN_SOURCE 500
+#endif
+
 #include "globals.h"
 #include "utils.h"
-
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-FILE *onsen_open_file(const char *, const char *);
-int onsen_close_file(FILE *);
+enum OnsenFileMode {
+    RDONLY,
+    WRONLY
+};
 
-char onsen_file_read_byte(FILE *);
-int onsen_file_read_int(FILE *);
-short onsen_file_read_short(FILE *);
-long onsen_file_read_long(FILE *);
+typedef struct _OnsenFile_s OnsenFile_t;
+struct _OnsenFile_s {
+    const char *szFilename;
+    int iFd;
+    long lFileSize;
+    unsigned char *pData;
+};
 
-long onsen_get_file_size(FILE *);
-void onsen_file_rewind(FILE *);
-int onsen_file_goto(FILE *, int);
-int onsen_file_skip(FILE *, int);
+
+OnsenFile_t *onsen_new_disk_file(const char *, enum OnsenFileMode, long);
+void onsen_free_disk_file(OnsenFile_t *);
 
 int onsen_mkdir(const char *);
 
