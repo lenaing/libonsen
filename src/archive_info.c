@@ -41,9 +41,9 @@ onsen_new_archive_info()
     OnsenArchiveInfo_t *pInfo;
 
     pInfo = onsen_malloc(sizeof(OnsenArchiveInfo_t));
-    pInfo->lArchiveFileSize = 0;
-    pInfo->a_pArchiveEntries = NULL;
-    pInfo->iArchiveEntriesCount = 0;
+    pInfo->lArchiveFileSize          = 0;
+    pInfo->a_pArchiveEntries         = NULL;
+    pInfo->iArchiveEntriesCount      = 0;
     pInfo->eArchiveFilenamesEncoding = ASCII;
 
     return pInfo;

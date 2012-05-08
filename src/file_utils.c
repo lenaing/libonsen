@@ -42,6 +42,7 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
     OnsenFile_t *pDiskFile;
     int rc;
     int bError = 0;
+    int bIsMmaped = 0;
     int iFd;
     int iMmapProto;
     unsigned char *pData = NULL;
@@ -86,6 +87,7 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
 
     if (0 == bError) {
         if (lFileSize <= MAX_MMAPED_FILE_SIZE) {
+            bIsMmaped = 1;
             iMmapProto = (eMode == WRONLY) ? PROT_WRITE : PROT_READ;
             pData = mmap(NULL, lFileSize, iMmapProto, MAP_SHARED, iFd, 0);
             if (MAP_FAILED == pData) {
@@ -108,6 +110,7 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
 
     pDiskFile = onsen_malloc(sizeof(OnsenFile_t));
     pDiskFile->szFilename = szFilename;
+    pDiskFile->bIsMmaped = bIsMmaped;
     pDiskFile->iFd = iFd;
     pDiskFile->lFileSize = lFileSize;
     pDiskFile->pData = pData;

@@ -58,6 +58,7 @@ enum OnsenFileMode {
 typedef struct _OnsenFile_s OnsenFile_t;
 struct _OnsenFile_s {
     const char *szFilename;
+    int bIsMmaped;
     int iFd;
     long lFileSize;
     unsigned char *pData;
