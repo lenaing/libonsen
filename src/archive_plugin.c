@@ -42,8 +42,8 @@ onsen_new_archive_plugin()
 
     pPlugin = onsen_malloc(sizeof(OnsenArchivePlugin_t));
     pPlugin->getArchiveInfo = NULL;
-    pPlugin->getFileInfo = NULL;
-    pPlugin->writeFile = &onsen_write_file_raw;
+    pPlugin->getFileInfo    = NULL;
+    pPlugin->writeFile      = &onsen_write_file_raw;
 
     return pPlugin;
 }
@@ -51,6 +51,8 @@ onsen_new_archive_plugin()
 void
 onsen_free_archive_plugin(OnsenArchivePlugin_t *pPlugin)
 {
+    assert(NULL != pPlugin);
+
     if (NULL != pPlugin) {
         onsen_free(pPlugin);
     }
@@ -59,8 +61,8 @@ onsen_free_archive_plugin(OnsenArchivePlugin_t *pPlugin)
 int
 onsen_archive_plugin_load_funcs(OnsenPlugin_t *pPlugin)
 {
-    void *pFun;
     OnsenArchivePlugin_t *pInstance;
+    void *pFun;
 
     assert(NULL != pPlugin);
 
@@ -107,14 +109,18 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
 {
     OnsenFile_t *pDstDiskFile;
     int i = 0;
-    int bError = 0;
+    int bError = 1;
     int iNbBytesRead = 0;
     int iNbBytesToCopy = 0;
     int iSrcFd;
+    int rc;
     long lOffset;
     unsigned char *pSrcData = NULL;
     unsigned char *pDstData = NULL;
     unsigned char aBuffer[IO_BUFFER_SIZE];
+
+    assert(NULL != szSrcFile);
+    assert(NULL != szDstFile);
 
     if (0 == iSrcType) {
         /* Disk file */
@@ -130,93 +136,115 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                                                             WRONLY,
                                                             lDstFileSize);
         if (NULL == pDstDiskFile) {
-            bError = 1;
+            bError = 0;
+        } else {
+            pDstData = pDstDiskFile->pData;
         }
-        pDstData = pDstDiskFile->pData;
     } else {
         /* Memory file */
         pDstData = szDstFile;
     }
 
-    if (0 == bError) {
+    if (1 == bError) {
+
+        if (NULL != pCallback) {
+            pCallback(100, 0, pData);
+        }
 
         if (NULL != pSrcData && NULL != pDstData) {
             /* Memory -> Memory */
-            if (NULL != pCallback) {
-                pCallback(100, 0, pData);
-            }
             memcpy(pDstData, pSrcData + lSrcOffset, lDstFileSize);
-            if (NULL != pCallback) {
-                pCallback(100, 100, pData);
-            }
         } else if (NULL == pSrcData && NULL == pDstData) {
             /* Disk -> Disk */
-            if (NULL != pCallback) {
-                pCallback(100, 0, pData);
+
+            rc = lseek(iSrcFd, lSrcOffset, SEEK_SET);
+            if (-1 == rc) {
+                perror("lseek");
+                onsen_err_ko("Seek failed in source file.");
+                bError = 0;
             }
 
-            lOffset = 0;
-            lseek(iSrcFd, lSrcOffset, SEEK_SET);
-            lseek(pDstDiskFile->iFd, 0, SEEK_SET);
-            while ((iNbBytesRead = read(iSrcFd,
-                                        &aBuffer,
-                                        IO_BUFFER_SIZE)) > 0) {
-
-                iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
-                                    ? lDstFileSize - lOffset
-                                    : iNbBytesRead;
-
-                write(pDstDiskFile->iFd, &aBuffer, iNbBytesToCopy);
-
-                lOffset += iNbBytesRead;
-                if (lOffset > lDstFileSize) {
-                    break;
-                }
-
-                if (NULL != pCallback) {
-                    pCallback(lDstFileSize, lOffset, pData);
-                }
+            rc = lseek(pDstDiskFile->iFd, 0, SEEK_SET);
+            if (-1 == rc) {
+                perror("lseek");
+                onsen_err_ko("Seek failed in destination file.");
+                bError = 0;
             }
 
-            if (NULL != pCallback) {
-                pCallback(100, 100, pData);
+            if (1 == bError) {
+                lOffset = 0;
+                while ((iNbBytesRead = read(iSrcFd,
+                                            &aBuffer,
+                                            IO_BUFFER_SIZE)) > 0) {
+
+                    iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
+                                        ? lDstFileSize - lOffset
+                                        : iNbBytesRead;
+
+                    rc = write(pDstDiskFile->iFd, &aBuffer, iNbBytesToCopy);
+                    if (-1 == rc) {
+                        perror("write");
+                        onsen_err_ko("Write failed to destination file.");
+                        bError = 0;
+                        break;
+                    }
+
+                    lOffset += iNbBytesRead;
+                    if (lOffset > lDstFileSize) {
+                        break;
+                    }
+
+                    if (NULL != pCallback) {
+                        pCallback(lDstFileSize, lOffset, pData);
+                    }
+                }
+
+                if (-1 == iNbBytesRead) {
+                    perror("read");
+                    onsen_err_ko("Read failed from source file.");
+                    bError = 0;
+                }
             }
         } else if (NULL == pSrcData) {
             /* Disk -> Memory */
-            if (NULL != pCallback) {
-                pCallback(100, 0, pData);
+
+            rc = lseek(iSrcFd, lSrcOffset, SEEK_SET);
+            if (-1 == rc) {
+                perror("lseek");
+                onsen_err_ko("Seek failed in source file.");
+                bError = 0;
             }
 
-            lOffset = 0;
-            lseek(iSrcFd, lSrcOffset, SEEK_SET);
-            while ((iNbBytesRead = read(iSrcFd,
-                                        &aBuffer,
-                                        IO_BUFFER_SIZE)) > 0) {
+            if (1 == bError) {
+                lOffset = 0;
+                while ((iNbBytesRead = read(iSrcFd,
+                                            &aBuffer,
+                                            IO_BUFFER_SIZE)) > 0) {
 
-                iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
-                                    ? lDstFileSize - lOffset
-                                    : iNbBytesRead;
+                    iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
+                                        ? lDstFileSize - lOffset
+                                        : iNbBytesRead;
 
-                memcpy(pDstData + lOffset, &aBuffer, iNbBytesToCopy);
+                    memcpy(pDstData + lOffset, &aBuffer, iNbBytesToCopy);
 
-                lOffset += iNbBytesRead;
-                if (lOffset > lDstFileSize) {
-                    break;
+                    lOffset += iNbBytesRead;
+                    if (lOffset > lDstFileSize) {
+                        break;
+                    }
+
+                    if (NULL != pCallback) {
+                        pCallback(lDstFileSize, lOffset, pData);
+                    }
                 }
 
-                if (NULL != pCallback) {
-                    pCallback(lDstFileSize, lOffset, pData);
+                if (-1 == iNbBytesRead) {
+                    perror("read");
+                    onsen_err_ko("Read failed from source file.");
+                    bError = 0;
                 }
-            }
-
-            if (NULL != pCallback) {
-                pCallback(100, 100, pData);
             }
         } else if (NULL == pDstData) {
             /* Memory -> Disk */
-            if (NULL != pCallback) {
-                pCallback(100, 0, pData);
-            }
 
             i = 0;
             while (i < lDstFileSize) {
@@ -227,15 +255,23 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                 iNbBytesToCopy = (lDstFileSize < (i + IO_BUFFER_SIZE))
                                     ? lDstFileSize - i
                                     : IO_BUFFER_SIZE;
-                write(pDstDiskFile->iFd,
-                        pSrcData + lSrcOffset + i,
-                        iNbBytesToCopy);
+
+                rc = write(pDstDiskFile->iFd,
+                                pSrcData + lSrcOffset + i,
+                                iNbBytesToCopy);
+                if (-1 == rc) {
+                    perror("write");
+                    onsen_err_ko("Write failed to destination file");
+                    bError = 0;
+                    break;
+                }
+
                 i += IO_BUFFER_SIZE;
             };
+        }
 
-            if (NULL != pCallback) {
-                pCallback(100, 100, pData);
-            }
+        if (NULL != pCallback) {
+            pCallback(100, 100, pData);
         }
     }
 

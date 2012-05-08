@@ -58,6 +58,8 @@ onsen_free_archive_entry(OnsenArchiveEntry_t *pEntry)
 {
     int i;
 
+    assert(NULL != pEntry);
+
     if (NULL != pEntry) {
         if (NULL != pEntry->szFilename) {
             onsen_free(pEntry->szFilename);

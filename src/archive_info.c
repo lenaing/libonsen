@@ -54,6 +54,8 @@ onsen_free_archive_info(OnsenArchiveInfo_t *pInfo)
 {
     int i;
 
+    assert(NULL != pInfo);
+
     if (NULL != pInfo) {
 
         if (NULL != pInfo->a_pArchiveEntries) {
