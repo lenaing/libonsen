@@ -36,21 +36,6 @@
 #include "string_utils.h"
 
 char *
-onsen_basedir(char *szSource)
-{
-    char *szTemp;
-    char *szBasedir;
-
-    assert(NULL != szSource);
-
-    szTemp = onsen_strdup(szSource);
-    szBasedir = onsen_strdup(dirname(szTemp));
-    onsen_free(szTemp);
-
-    return szBasedir;
-}
-
-char *
 onsen_build_filename(const char *szPath, const char *szFilename)
 {
     assert(NULL != szPath);
@@ -157,7 +142,3 @@ onsen_str_is_slashed(const char *str)
     }
     return 1;
 }
-
-
-
-

@@ -63,8 +63,11 @@ SET(
         src/archive_entry.h
         src/archive_info.h
         src/archive_plugin.h
+        src/config.h
+        src/constants.h
         src/encodings.h
         src/file_utils.h
+        src/globals.h
         src/iconv_utils.h
         src/picture.h
         src/picture_importer_plugin.h
@@ -72,9 +75,7 @@ SET(
         src/shift_jis_utils.h
         src/string_utils.h
         src/utils.h
-        src/globals.h
         src/verbosity.h
-        src/config.h
 )
 
 SET(ONSEN_VERSION_MAJOR 0)

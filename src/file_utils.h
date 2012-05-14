@@ -47,14 +47,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define MAX_MMAPED_FILE_SIZE 104857600  /* 100 Mo */
-#define IO_BUFFER_SIZE 4096
-
-enum OnsenFileMode {
-    RDONLY,
-    WRONLY
-};
-
 typedef struct _OnsenFile_s OnsenFile_t;
 struct _OnsenFile_s {
     const char *szFilename;
@@ -64,7 +56,7 @@ struct _OnsenFile_s {
     unsigned char *pData;
 };
 
-OnsenFile_t *onsen_new_disk_file(const char *, enum OnsenFileMode, long);
+OnsenFile_t *onsen_new_disk_file(const char *, OnsenFileMode, long);
 void onsen_free_disk_file(OnsenFile_t *);
 
 int onsen_mkdir(const char *);

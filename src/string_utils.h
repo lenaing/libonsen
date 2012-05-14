@@ -39,7 +39,6 @@
 #include "utils.h"
 #include <libgen.h>
 
-char *onsen_basedir(char *);
 char *onsen_build_filename(const char *, const char *);
 char *onsen_build_filename_with_extension(const char *,
                                           const char *,

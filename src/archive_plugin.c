@@ -117,12 +117,12 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
     long lOffset;
     unsigned char *pSrcData = NULL;
     unsigned char *pDstData = NULL;
-    unsigned char aBuffer[IO_BUFFER_SIZE];
+    unsigned char aBuffer[ONSEN_IO_BUFFER_SIZE];
 
     assert(NULL != szSrcFile);
     assert(NULL != szDstFile);
 
-    if (0 == iSrcType) {
+    if (ONSEN_DISK_FILE == iSrcType) {
         /* Disk file */
         iSrcFd = *(int *)szSrcFile;
     } else {
@@ -130,10 +130,10 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
         pSrcData = szSrcFile;
     }
 
-    if (0 == iDstType) {
+    if (ONSEN_DISK_FILE == iDstType) {
         /* Disk file */
         pDstDiskFile = onsen_new_disk_file((const char *)szDstFile,
-                                                            WRONLY,
+                                                            ONSEN_WRITE_ONLY,
                                                             lDstFileSize);
         if (NULL == pDstDiskFile) {
             bError = 0;
@@ -175,7 +175,7 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                 lOffset = 0;
                 while ((iNbBytesRead = read(iSrcFd,
                                             &aBuffer,
-                                            IO_BUFFER_SIZE)) > 0) {
+                                            ONSEN_IO_BUFFER_SIZE)) > 0) {
 
                     iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
                                         ? lDstFileSize - lOffset
@@ -219,7 +219,7 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                 lOffset = 0;
                 while ((iNbBytesRead = read(iSrcFd,
                                             &aBuffer,
-                                            IO_BUFFER_SIZE)) > 0) {
+                                            ONSEN_IO_BUFFER_SIZE)) > 0) {
 
                     iNbBytesToCopy = (lDstFileSize < (lOffset + iNbBytesRead))
                                         ? lDstFileSize - lOffset
@@ -252,9 +252,9 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                     pCallback(lDstFileSize, i, pData);
                 }
 
-                iNbBytesToCopy = (lDstFileSize < (i + IO_BUFFER_SIZE))
+                iNbBytesToCopy = (lDstFileSize < (i + ONSEN_IO_BUFFER_SIZE))
                                     ? lDstFileSize - i
-                                    : IO_BUFFER_SIZE;
+                                    : ONSEN_IO_BUFFER_SIZE;
 
                 rc = write(pDstDiskFile->iFd,
                                 pSrcData + lSrcOffset + i,
@@ -266,7 +266,7 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
                     break;
                 }
 
-                i += IO_BUFFER_SIZE;
+                i += ONSEN_IO_BUFFER_SIZE;
             };
         }
 
@@ -276,7 +276,7 @@ onsen_write_file_raw(int iSrcType, void *szSrcFile, long lSrcOffset,
     }
 
     /* Close destination disk file */
-    if (0 == iDstType) {
+    if (ONSEN_DISK_FILE == iDstType) {
         onsen_free_disk_file(pDstDiskFile);
     }
 

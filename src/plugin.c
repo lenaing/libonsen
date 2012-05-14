@@ -90,7 +90,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
         rc = onsen_unload_plugin(pPlugin);
         if (rc != 0) {
             onsen_err_ko("Failed to reload plugin %s.", pPlugin->szName);
-            errno = EPLGRLD;
+            errno = ONSEN_E_PLUGIN_RELOAD;
             return 1;
         }
     }
@@ -100,7 +100,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     pPlugin->szLibraryError = dlerror();
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to open library '%s'.", szLibFilename);
-        errno = ELIBOPN;
+        errno = ONSEN_E_LIB_OPEN;
         return 1;
     }
     pPlugin->bLibraryOpened = 1;
@@ -111,7 +111,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin infos function from library '%s'.",
                      szLibFilename);
-        errno = ELIBPLGGETINF;
+        errno = ONSEN_E_LIB_GET_PLUGIN_INFO;
         return 1;
     }
     memcpy(&(pPlugin->getPluginInfo), &pFun, sizeof(pPlugin->getPluginInfo));
@@ -125,7 +125,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                          api[0],
                          api[1],
                          szLibFilename);
-            errno = ELIBWRGAPI;
+            errno = ONSEN_E_WRONG_API;
             return 1;
         }
 
@@ -140,7 +140,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
                 onsen_err_ko("Unknown plugin type : '0x%02X' for library '%s'.",
                              api[2],
                              szLibFilename);
-                errno = EPLGINVTYP;
+                errno = ONSEN_E_PLUGIN_TYPE;
                 return 1;
             }
         }
@@ -148,7 +148,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     } else {
         onsen_err_ko("Failed to retrieve plugin metadata from library '%s'.",
                      szLibFilename);
-        errno = EPLGMETA;
+        errno = ONSEN_E_PLUGIN_METADATA;
         return 1;
     }
 
@@ -186,7 +186,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
     if (NULL != pPlugin->szLibraryError) {
         onsen_err_ko("Failed to get plugin %s file support function.",
                      pPlugin->szName);
-        errno = ELIBPLGFILSUP;
+        errno = ONSEN_E_LIB_IS_FILE_SUPPORTED;
         return 1;
     }
     memcpy(&(pPlugin->isFileSupported), &pFun,
@@ -198,7 +198,7 @@ onsen_load_plugin(OnsenPlugin_t *pPlugin, const char *szLibFilename)
         /* Failed to instantiate plugin instance */
         onsen_err_ko("Failed to load plugin %s functions from library.",
                      szPluginName);
-        errno = EPLGMANFUN;
+        errno = ONSEN_E_PLUGIN_FUNCTIONS;
         return 1;
     }
 

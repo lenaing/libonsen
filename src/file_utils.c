@@ -36,7 +36,7 @@
 #include "file_utils.h"
 
 OnsenFile_t *
-onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
+onsen_new_disk_file(const char *szFilename, OnsenFileMode eMode,
                         long lFileSize)
 {
     OnsenFile_t *pDiskFile;
@@ -48,10 +48,10 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
     unsigned char *pData = NULL;
 
     switch (eMode) {
-        case WRONLY : {
+        case ONSEN_WRITE_ONLY : {
             iFd = open(szFilename, O_RDWR|O_CREAT|O_TRUNC, 0644);
         } break;
-        case RDONLY :
+        case ONSEN_READ_ONLY :
         default : {
             iFd = open(szFilename, O_RDONLY);
         } break;
@@ -64,7 +64,7 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
     }
 
     switch (eMode) {
-        case WRONLY : {
+        case ONSEN_WRITE_ONLY : {
             rc = pwrite(iFd, "", 1, lFileSize - 1);
             if (-1 == rc) {
                 perror("pwrite");
@@ -74,7 +74,7 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
                 bError = 1;
             }
         } break;
-        case RDONLY :
+        case ONSEN_READ_ONLY :
         default : {
             lFileSize = lseek(iFd, 0, SEEK_END);
             if (-1 == lFileSize) {
@@ -86,9 +86,9 @@ onsen_new_disk_file(const char *szFilename, enum OnsenFileMode eMode,
     }
 
     if (0 == bError) {
-        if (lFileSize <= MAX_MMAPED_FILE_SIZE) {
+        if (lFileSize <= ONSEN_MAX_MMAPED_FILE_SIZE) {
             bIsMmaped = 1;
-            iMmapProto = (eMode == WRONLY) ? PROT_WRITE : PROT_READ;
+            iMmapProto = (eMode == ONSEN_WRITE_ONLY) ? PROT_WRITE : PROT_READ;
             pData = mmap(NULL, lFileSize, iMmapProto, MAP_SHARED, iFd, 0);
             if (MAP_FAILED == pData) {
                 perror("mmap");

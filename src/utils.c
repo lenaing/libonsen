@@ -42,6 +42,8 @@ onsen_out_barf(const char *szWhat, ...)
 {
     va_list ap;
 
+    assert(NULL != szWhat);
+
     if (onsen_verbosity < ETLAJESUISHYPERCONTENT) {
         return;
     }
@@ -57,6 +59,8 @@ void
 onsen_out_ok(const char *szWhat, ...)
 {
     va_list ap;
+
+    assert(NULL != szWhat);
 
     if (onsen_verbosity < QUANDJESUISCONTENTJEVOMIS) {
         return;
@@ -74,6 +78,8 @@ onsen_err_warning(const char *szWhat, ...)
 {
     va_list ap;
 
+    assert(NULL != szWhat);
+
     if (onsen_verbosity < WARNINGS) {
         return;
     }
@@ -90,6 +96,8 @@ onsen_err_ko(const char *szWhat, ...)
 {
     va_list ap;
 
+    assert(NULL != szWhat);
+
     if (onsen_verbosity < ERRORS) {
         return;
     }
@@ -105,6 +113,8 @@ void
 onsen_err_critical(const char *szWhat, ...)
 {
     va_list ap;
+
+    assert(NULL != szWhat);
 
     if (onsen_verbosity >= CRITICAL_ERRORS) {
         fprintf(stderr, "[X] ");

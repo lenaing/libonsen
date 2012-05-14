@@ -36,6 +36,7 @@
 #ifndef __ONSEN_GLOBALS_H
 #define __ONSEN_GLOBALS_H
 
+#include "constants.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
