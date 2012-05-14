@@ -147,11 +147,12 @@ int onsen_mkdir(const char *szPath)
 {
     char aBuffer[256];
     char *p_aBuffer;
-    char *szNoPerms = "Insufficient permissions to create directory '%s'.";
     char *szFailure = "Failed to create directory '%s'.";
     size_t len;
     int n;
     int rc = 0;
+
+    assert(NULL != szPath);
 
     n = sizeof(aBuffer);
     strncpy(aBuffer, szPath, n);
@@ -170,15 +171,8 @@ int onsen_mkdir(const char *szPath)
             *p_aBuffer = '\0';
 
             if (strcmp("", aBuffer)) {
-                rc = access(aBuffer, F_OK);
-                if (-1 == rc) {
-                    perror("access");
-                    onsen_err_ko(szNoPerms, aBuffer);
-                    return 0;
-                }
-
                 rc = mkdir(aBuffer, S_IRWXU);
-                if (-1 == rc) {
+                if (-1 == rc && EEXIST != errno) {
                     perror("mkdir");
                     onsen_err_ko(szFailure, aBuffer);
                     return 0;
@@ -189,15 +183,8 @@ int onsen_mkdir(const char *szPath)
         }
     }
 
-    rc = access(aBuffer, F_OK);
-    if (-1 == rc) {
-        perror("access");
-        onsen_err_ko(szNoPerms, aBuffer);
-        return 0;
-    }
-
     rc = mkdir(aBuffer, S_IRWXU);
-    if (-1 == rc) {
+    if (-1 == rc && EEXIST != errno) {
         perror("mkdir");
         onsen_err_ko(szFailure, aBuffer);
         return 0;

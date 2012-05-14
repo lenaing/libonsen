@@ -42,10 +42,11 @@
 
 #include "globals.h"
 #include "utils.h"
+#include <errno.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 typedef struct _OnsenFile_s OnsenFile_t;
 struct _OnsenFile_s {
