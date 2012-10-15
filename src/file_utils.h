@@ -42,6 +42,7 @@
 
 #include "globals.h"
 #include "utils.h"
+#include "string_utils.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -50,7 +51,7 @@
 
 typedef struct _OnsenFile_s OnsenFile_t;
 struct _OnsenFile_s {
-    const char *szFilename;
+    char *szFilename;
     int bIsMmaped;
     int iFd;
     long lFileSize;

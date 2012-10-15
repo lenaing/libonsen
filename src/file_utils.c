@@ -109,7 +109,7 @@ onsen_new_disk_file(const char *szFilename, OnsenFileMode eMode,
     }
 
     pDiskFile = onsen_malloc(sizeof(OnsenFile_t));
-    pDiskFile->szFilename = szFilename;
+    pDiskFile->szFilename = onsen_strdup(szFilename);
     pDiskFile->bIsMmaped  = bIsMmaped;
     pDiskFile->iFd        = iFd;
     pDiskFile->lFileSize  = lFileSize;
@@ -139,6 +139,7 @@ onsen_free_disk_file(OnsenFile_t *pDiskFile)
             onsen_err_ko("Failed to close file '%s'.\n", pDiskFile->szFilename);
         }
 
+        onsen_free(pDiskFile->szFilename);
         free(pDiskFile);
     }
 }
