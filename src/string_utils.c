@@ -97,8 +97,8 @@ onsen_build_filename_with_extension(const char *szPath, const char *szFilename,
     return szBuiltFilename;
 }
 
-char
-*onsen_strdup(const char *szSource)
+char *
+onsen_strdup(const char *szSource)
 {
     char *szDestination;
     int iSourceLen;
