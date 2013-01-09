@@ -1,5 +1,5 @@
 #
-# Copyright 2011, 2012 - Etienne 'lenaing' GIRONDEL <lenaing@gmail.com>
+# Copyright 2011-2013 - Etienne 'lenaing' GIRONDEL <lenaing@gmail.com>
 # 
 # libonsen
 # --------

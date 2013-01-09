@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 - Etienne 'lenaing' GIRONDEL <lenaing@gmail.com>
+ * Copyright 2011-2013 - Etienne 'lenaing' GIRONDEL <lenaing@gmail.com>
  * 
  * libonsen
  * --------
@@ -139,7 +139,7 @@ onsen_free_disk_file(OnsenFile_t *diskFile)
         }
 
         onsen_free(diskFile->filename);
-        free(diskFile);
+        onsen_free(diskFile);
     }
 }
 

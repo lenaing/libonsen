@@ -24,20 +24,6 @@ thorougfully so you can create and use libonsen plugins!
 Archive plugins are plugins designed to open data archives, pretty much like
 *zip utilities.
 
-### Iconv Helper
-
-The libiconv (http://www.gnu.org/s/libiconv/) library enable an application to
-support multiple character encodings.
-The libonsen library include a wrapper to take care of libiconv calls.
-The libiconv, libcharset libraries and their header files are under
-LGPL v2.1 (http://www.gnu.org/licenses/lgpl-2.1.html).
-
-### Shift-JIS Helper
-
-Thanks to the Iconv support, you can manipulate Shift-JIS strings and translate
-them in another encoding. Please note that currently only Shift-JIS to UTF-8
-conversion is supported.
-
 Install
 --------
 
@@ -68,7 +54,7 @@ As superuser :
 Homepage
 --------
 
-    https://tracker.ziirish.info/projects/libonsen/
+    TODO
 
 Bug reports to
 --------------
