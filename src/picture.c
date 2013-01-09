@@ -38,47 +38,47 @@
 OnsenDIBHeader_t *
 onsen_new_dib_header()
 {
-    OnsenDIBHeader_t *pDIBHeader;
+    OnsenDIBHeader_t *DIBHeader;
 
-    pDIBHeader = onsen_malloc(sizeof(OnsenDIBHeader_t));
+    DIBHeader = onsen_malloc(sizeof(OnsenDIBHeader_t));
 
-    return pDIBHeader;
+    return DIBHeader;
 }
 
 void
-onsen_free_dib_header(OnsenDIBHeader_t *pDIBHeader)
+onsen_free_dib_header(OnsenDIBHeader_t *DIBHeader)
 {
-    assert(NULL != pDIBHeader);
+    assert(NULL != DIBHeader);
 
-    if (NULL != pDIBHeader) {
-        onsen_free(pDIBHeader);
+    if (NULL != DIBHeader) {
+        onsen_free(DIBHeader);
     }
 }
 
 OnsenPictureInfo_t *
 onsen_new_picture_info()
 {
-    OnsenPictureInfo_t *pInfo;
+    OnsenPictureInfo_t *info;
 
-    pInfo = onsen_malloc(sizeof(OnsenPictureInfo_t));
-    pInfo->pDIBHeader = onsen_new_dib_header();
-    pInfo->a_cColorMap = NULL;
+    info = onsen_malloc(sizeof(OnsenPictureInfo_t));
+    info->DIBHeader = onsen_new_dib_header();
+    info->colorMap = NULL;
 
-    return pInfo;
+    return info;
 }
 
 void
-onsen_free_picture_info(OnsenPictureInfo_t *pInfo)
+onsen_free_picture_info(OnsenPictureInfo_t *info)
 {
-    assert(NULL != pInfo);
+    assert(NULL != info);
 
-    if (NULL != pInfo) {
+    if (NULL != info) {
 
-        if (NULL != pInfo->a_cColorMap) {
-            onsen_free(pInfo->a_cColorMap);
+        if (NULL != info->colorMap) {
+            onsen_free(info->colorMap);
         }
 
-        onsen_free_dib_header(pInfo->pDIBHeader);
-        onsen_free(pInfo);
+        onsen_free_dib_header(info->DIBHeader);
+        onsen_free(info);
     }
 }

@@ -36,92 +36,92 @@
 #include "string_utils.h"
 
 char *
-onsen_build_filename(const char *szPath, const char *szFilename)
+onsen_build_filename(const char *path, const char *filename)
 {
-    assert(NULL != szPath);
-    assert(NULL != szFilename);
+    assert(NULL != path);
+    assert(NULL != filename);
 
-    return onsen_build_filename_with_extension(szPath, szFilename, NULL);
+    return onsen_build_filename_with_extension(path, filename, NULL);
 }
 
 char *
-onsen_build_filename_with_extension(const char *szPath, const char *szFilename, 
-                                    const char *szFileExtension)
+onsen_build_filename_with_extension(const char *path, const char *filename, 
+                                    const char *fileExtension)
 {
-    char *szBuiltFilename;
-    int iPathLen;
-    int iFilenameLen;
-    int iFileExtensionLen;
-    int iPadding;
+    char *builtFilename;
+    int pathLen;
+    int filenameLen;
+    int fileExtensionLen;
+    int padding;
 
-    assert(NULL != szPath);
-    assert(NULL != szFilename);
+    assert(NULL != path);
+    assert(NULL != filename);
 
-    iPadding = 0;
-    iPathLen = strlen(szPath);
-    iFilenameLen = strlen(szFilename);
+    padding = 0;
+    pathLen = strlen(path);
+    filenameLen = strlen(filename);
 
-    if (NULL != szFileExtension) {
-        iFileExtensionLen = strlen(szFileExtension);
-        iPadding++;
+    if (NULL != fileExtension) {
+        fileExtensionLen = strlen(fileExtension);
+        padding++;
     } else {
-        iFileExtensionLen = 0;
+        fileExtensionLen = 0;
     }
 
-    if (szPath[strlen(szPath)-1] != '/') {
-        iPadding++;
+    if (path[strlen(path)-1] != '/') {
+        padding++;
     }
 
-    szBuiltFilename = onsen_calloc(iPathLen + iPadding + iFilenameLen
-                                   + iFileExtensionLen + 1, sizeof(char));
+    builtFilename = onsen_calloc(pathLen + padding + filenameLen
+                                   + fileExtensionLen + 1, sizeof(char));
 
     /* Copy path. */
-    strncpy(szBuiltFilename, szPath, iPathLen);
+    strncpy(builtFilename, path, pathLen);
 
     /* Add final slash to path. */
-    if (szPath[strlen(szPath)-1] != '/') {
-        strncat(szBuiltFilename, "/", 1);
+    if (path[strlen(path)-1] != '/') {
+        strncat(builtFilename, "/", 1);
     }
 
     /* Copy filename. */
-    strncat(szBuiltFilename, szFilename, iFilenameLen);
+    strncat(builtFilename, filename, filenameLen);
     
     /* Copy '.' and extension if extension is provided. */
-    if (NULL != szFileExtension) {
-        strncat(szBuiltFilename, ".", 1);
-        strncat(szBuiltFilename, szFileExtension, iFileExtensionLen);
+    if (NULL != fileExtension) {
+        strncat(builtFilename, ".", 1);
+        strncat(builtFilename, fileExtension, fileExtensionLen);
     }
 
     /* Sanitize built string. */
-    szBuiltFilename[iPathLen + iFilenameLen + iFileExtensionLen + iPadding] = 0;
-    return szBuiltFilename;
+    builtFilename[pathLen + filenameLen + fileExtensionLen + padding] = 0;
+    return builtFilename;
 }
 
 char *
-onsen_strdup(const char *szSource)
+onsen_strdup(const char *source)
 {
-    char *szDestination;
-    int iSourceLen;
+    char *destination;
+    int sourceLen;
 
-    assert(NULL != szSource);
+    assert(NULL != source);
 
-    iSourceLen = strlen(szSource) + 1;
-    szDestination = onsen_calloc(iSourceLen, sizeof(char));
-    strncpy(szDestination, szSource, iSourceLen);
+    sourceLen = strlen(source) + 1;
+    destination = onsen_calloc(sourceLen, sizeof(char));
+    strncpy(destination, source, sourceLen);
 
-    return szDestination;
+    return destination;
 }
 
 void
-onsen_str_chr_replace(char *szSource, const char cOld, const char cNew)
+onsen_str_chr_replace(char *source, const char old, const char new)
 {
-    char *pSource = szSource;
+    char *pSource = source;
 
-    assert(NULL != szSource);
+    assert(NULL != source);
 
     while (*pSource) {
-        if (*pSource == cOld) {
-            *pSource = cNew;
+        if (*pSource == old) {
+            *pSource = new;
         }
         ++pSource;
     }

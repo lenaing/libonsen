@@ -38,34 +38,34 @@
 OnsenArchiveInfo_t *
 onsen_new_archive_info()
 {
-    OnsenArchiveInfo_t *pInfo;
+    OnsenArchiveInfo_t *info;
 
-    pInfo = onsen_malloc(sizeof(OnsenArchiveInfo_t));
-    pInfo->lArchiveFileSize          = 0;
-    pInfo->a_pArchiveEntries         = NULL;
-    pInfo->iArchiveEntriesCount      = 0;
-    pInfo->eArchiveFilenamesEncoding = ASCII;
+    info = onsen_malloc(sizeof(OnsenArchiveInfo_t));
+    info->archiveFileSize          = 0;
+    info->archiveEntries           = NULL;
+    info->archiveEntriesCount      = 0;
+    info->archiveFilenamesEncoding = ASCII;
 
-    return pInfo;
+    return info;
 }
 
 void
-onsen_free_archive_info(OnsenArchiveInfo_t *pInfo)
+onsen_free_archive_info(OnsenArchiveInfo_t *info)
 {
     int i;
 
-    assert(NULL != pInfo);
+    assert(NULL != info);
 
-    if (NULL != pInfo) {
+    if (NULL != info) {
 
-        if (NULL != pInfo->a_pArchiveEntries) {
-            for (i = 0; i < (pInfo->iArchiveEntriesCount + 1); i++) {
-                if (NULL != pInfo->a_pArchiveEntries[i]) {
-                    onsen_free_archive_entry(pInfo->a_pArchiveEntries[i]);
+        if (NULL != info->archiveEntries) {
+            for (i = 0; i < (info->archiveEntriesCount + 1); i++) {
+                if (NULL != info->archiveEntries[i]) {
+                    onsen_free_archive_entry(info->archiveEntries[i]);
                 }
             }
-            onsen_free(pInfo->a_pArchiveEntries);
+            onsen_free(info->archiveEntries);
         }
-        onsen_free(pInfo);
+        onsen_free(info);
     }
 }

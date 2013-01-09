@@ -51,11 +51,11 @@
 
 typedef struct _OnsenFile_s OnsenFile_t;
 struct _OnsenFile_s {
-    char *szFilename;
-    int bIsMmaped;
-    int iFd;
-    long lFileSize;
-    unsigned char *pData;
+    char *filename;
+    int isMmaped;
+    int fd;
+    long fileSize;
+    unsigned char *data;
 };
 
 OnsenFile_t *onsen_new_disk_file(const char *, OnsenFileMode, long);

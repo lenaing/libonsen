@@ -38,50 +38,50 @@
 OnsenPictureImporterPlugin_t *
 onsen_new_picture_importer_plugin()
 {
-    OnsenPictureImporterPlugin_t *pPlugin;
+    OnsenPictureImporterPlugin_t *plugin;
 
-    pPlugin = onsen_malloc(sizeof(OnsenPictureImporterPlugin_t));
-    pPlugin->getPictureInfo = NULL;
+    plugin = onsen_malloc(sizeof(OnsenPictureImporterPlugin_t));
+    plugin->getPictureInfo = NULL;
 
-    return pPlugin;
+    return plugin;
 }
 
 void
-onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *pPlugin)
+onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *plugin)
 {
-    assert(NULL != pPlugin);
+    assert(NULL != plugin);
 
-    if (NULL != pPlugin) {
-        onsen_free(pPlugin);
+    if (NULL != plugin) {
+        onsen_free(plugin);
     }
 }
 
 int
-onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *pPlugin)
+onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *plugin)
 {
-    void *pFun;
-    OnsenPictureImporterPlugin_t *pInstance;
+    void *fun;
+    OnsenPictureImporterPlugin_t *instance;
 
-    assert(NULL != pPlugin);
+    assert(NULL != plugin);
 
     /* Library already loaded. */
-    if (pPlugin->bLibraryLoaded) {
-        onsen_err_warning("Plugin %s already loaded.", pPlugin->szName);
+    if (plugin->isLibraryLoaded) {
+        onsen_err_warning("Plugin %s already loaded.", plugin->name);
         return 0;
     }
 
-    pInstance = pPlugin->pInstance;
-    if (NULL == pInstance) {
+    instance = plugin->instance;
+    if (NULL == instance) {
         return 1;
     }
 
-    pFun = dlsym(pPlugin->pLibrary, "onsen_get_picture_info");
-    pPlugin->szLibraryError = dlerror();
-    if (NULL != pPlugin->szLibraryError) {
+    fun = dlsym(plugin->library, "onsen_get_picture_info");
+    plugin->libraryError = dlerror();
+    if (NULL != plugin->libraryError) {
         return 2;
     }
-    memcpy(&(pInstance->getPictureInfo), &pFun,
-                sizeof(pInstance->getPictureInfo));
+    memcpy(&(instance->getPictureInfo), &fun,
+                sizeof(instance->getPictureInfo));
 
     return 0;
 }

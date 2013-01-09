@@ -42,11 +42,11 @@
 typedef struct _OnsenArchiveInfo_s OnsenArchiveInfo_t;
 struct _OnsenArchiveInfo_s
 {
-    long lArchiveFileSize;                       /* Archive file size.        */
-    OnsenArchiveEntry_t **a_pArchiveEntries;     /* Archive file entries.     */
-    int iArchiveEntriesCount;                    /* Archive file entries
+    long archiveFileSize;                        /* Archive file size.        */
+    OnsenArchiveEntry_t **archiveEntries;        /* Archive file entries.     */
+    int archiveEntriesCount;                     /* Archive file entries
                                                     count.                    */
-    enum OnsenEncoding eArchiveFilenamesEncoding;/* Archive file entries      */
+    enum OnsenEncoding archiveFilenamesEncoding; /* Archive file entries      */
                                                  /* filenames encoding.       */
 };
 

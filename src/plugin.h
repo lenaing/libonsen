@@ -43,17 +43,17 @@
 typedef struct _OnsenPlugin_s OnsenPlugin_t;
 struct _OnsenPlugin_s
 {
-    int bLibraryOpened;                     /* Is plugin library opened?      */
-    int bLibraryLoaded;                     /* Is plugin library loaded?      */
-    void *pLibrary;                         /* Plugin library handle.         */
-    char *szLibraryError;                   /* Plugin library last error.     */
+    int isLibraryOpened;                    /* Is plugin library opened?      */
+    int isLibraryLoaded;                    /* Is plugin library loaded?      */
+    void *library;                          /* Plugin library handle.         */
+    char *libraryError;                     /* Plugin library last error.     */
 
-    int iType;                              /* Plugin type.                   */
-    char *szName;                           /* Plugin name.                   */
-    char *szVersion;                        /* Plugin version.                */
-    char *szAuthors;                        /* Plugin authors.                */
+    int type;                               /* Plugin type.                   */
+    char *name;                             /* Plugin name.                   */
+    char *version;                          /* Plugin version.                */
+    char *authors;                          /* Plugin authors.                */
 
-    void *pInstance;                        /* Plugin specific instance.      */
+    void *instance;                         /* Plugin specific instance.      */
 
     /* Mandatory plugin functions. */
     int (*getPluginInfo)(int, char *, int);

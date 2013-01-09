@@ -38,88 +38,88 @@
 extern int onsen_verbosity;
 
 void
-onsen_out_barf(const char *szWhat, ...)
+onsen_out_barf(const char *what, ...)
 {
     va_list ap;
 
-    assert(NULL != szWhat);
+    assert(NULL != what);
 
     if (onsen_verbosity < ETLAJESUISHYPERCONTENT) {
         return;
     }
 
     fprintf(stdout, "[ ] ");
-    va_start(ap, szWhat);
-    vfprintf(stdout, szWhat, ap);
+    va_start(ap, what);
+    vfprintf(stdout, what, ap);
     va_end(ap);
     fprintf(stdout,"\n");
 }
 
 void
-onsen_out_ok(const char *szWhat, ...)
+onsen_out_ok(const char *what, ...)
 {
     va_list ap;
 
-    assert(NULL != szWhat);
+    assert(NULL != what);
 
     if (onsen_verbosity < QUANDJESUISCONTENTJEVOMIS) {
         return;
     }
 
     fprintf(stdout, "[+] ");
-    va_start(ap, szWhat);
-    vfprintf(stdout, szWhat, ap);
+    va_start(ap, what);
+    vfprintf(stdout, what, ap);
     va_end(ap);
     fprintf(stdout,"\n");
 }
 
 void
-onsen_err_warning(const char *szWhat, ...)
+onsen_err_warning(const char *what, ...)
 {
     va_list ap;
 
-    assert(NULL != szWhat);
+    assert(NULL != what);
 
     if (onsen_verbosity < WARNINGS) {
         return;
     }
 
     fprintf(stderr, "[?] ");
-    va_start(ap, szWhat);
-    vfprintf(stderr, szWhat, ap);
+    va_start(ap, what);
+    vfprintf(stderr, what, ap);
     va_end(ap);
     fprintf(stderr,"\n");
 }
 
 void
-onsen_err_ko(const char *szWhat, ...)
+onsen_err_ko(const char *what, ...)
 {
     va_list ap;
 
-    assert(NULL != szWhat);
+    assert(NULL != what);
 
     if (onsen_verbosity < ERRORS) {
         return;
     }
 
     fprintf(stderr, "[!] ");
-    va_start(ap, szWhat);
-    vfprintf(stderr, szWhat, ap);
+    va_start(ap, what);
+    vfprintf(stderr, what, ap);
     va_end(ap);
     fprintf(stderr,"\n");
 }
 
 void
-onsen_err_critical(const char *szWhat, ...)
+onsen_err_critical(const char *what, ...)
 {
     va_list ap;
 
-    assert(NULL != szWhat);
+    assert(NULL != what);
 
     if (onsen_verbosity >= CRITICAL_ERRORS) {
         fprintf(stderr, "[X] ");
-        va_start(ap, szWhat);
-        vfprintf(stderr, szWhat, ap);
+        va_start(ap, what);
+        vfprintf(stderr, what, ap);
         va_end(ap);
         fprintf(stderr,"\n[X_X] You divided by zero? OH SHI-\n");
     }
@@ -128,11 +128,11 @@ onsen_err_critical(const char *szWhat, ...)
 }
 
 void *
-onsen_malloc(const size_t iSize)
+onsen_malloc(const size_t size)
 {
     void *ptr;
 
-    ptr = malloc(iSize);
+    ptr = malloc(size);
     if (NULL == ptr) {
         perror("malloc");
         onsen_err_critical("malloc failed.");
@@ -142,11 +142,11 @@ onsen_malloc(const size_t iSize)
 }
 
 void *
-onsen_calloc(const size_t iCount, const size_t iSize)
+onsen_calloc(const size_t count, const size_t size)
 {
     void *ptr;
 
-    ptr = calloc(iCount, iSize);
+    ptr = calloc(count, size);
     if (NULL == ptr) {
         perror("calloc");
         onsen_err_critical("calloc failed.");
@@ -156,14 +156,14 @@ onsen_calloc(const size_t iCount, const size_t iSize)
 }
 
 void *
-onsen_realloc(void *ptr, size_t iSize)
+onsen_realloc(void *ptr, size_t size)
 {
     void *nptr;
 
     if (!ptr) {
-        nptr = onsen_malloc(iSize);
+        nptr = onsen_malloc(size);
     } else {
-        nptr = realloc(ptr, iSize);
+        nptr = realloc(ptr, size);
     }
 
     if (NULL == nptr) {

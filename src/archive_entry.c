@@ -38,43 +38,43 @@
 OnsenArchiveEntry_t *
 onsen_new_archive_entry()
 {
-    OnsenArchiveEntry_t *pEntry;
+    OnsenArchiveEntry_t *entry;
 
-    pEntry = onsen_malloc(sizeof(OnsenArchiveEntry_t));
-    pEntry->szFilename      = NULL;
-    pEntry->iOffset         = 0;
-    pEntry->iSize           = 0;
-    pEntry->iCompressedSize = 0;
-    pEntry->bEncrypted      = 0;
-    pEntry->bCompressed     = 0;
-    pEntry->a_szAddlFds     = NULL;
-    pEntry->iAddlFdsCount   = 0;
+    entry = onsen_malloc(sizeof(OnsenArchiveEntry_t));
+    entry->filename       = NULL;
+    entry->offset         = 0;
+    entry->size           = 0;
+    entry->compressedSize = 0;
+    entry->isEncrypted    = 0;
+    entry->isCompressed   = 0;
+    entry->addlFds        = NULL;
+    entry->addlFdsCount   = 0;
 
-    return pEntry;
+    return entry;
 }
 
 void
-onsen_free_archive_entry(OnsenArchiveEntry_t *pEntry)
+onsen_free_archive_entry(OnsenArchiveEntry_t *entry)
 {
     int i;
 
-    assert(NULL != pEntry);
+    assert(NULL != entry);
 
-    if (NULL != pEntry) {
-        if (NULL != pEntry->szFilename) {
-            onsen_free(pEntry->szFilename);
+    if (NULL != entry) {
+        if (NULL != entry->filename) {
+            onsen_free(entry->filename);
         }
 
-        if (NULL != pEntry->a_szAddlFds) {
-            for (i = 0; i < pEntry->iAddlFdsCount; i++) {
-                if (NULL != pEntry->a_szAddlFds[i]) {
-                    onsen_free(pEntry->a_szAddlFds[i]);
+        if (NULL != entry->addlFds) {
+            for (i = 0; i < entry->addlFdsCount; i++) {
+                if (NULL != entry->addlFds[i]) {
+                    onsen_free(entry->addlFds[i]);
                 }
             }
 
-            onsen_free(pEntry->a_szAddlFds);
+            onsen_free(entry->addlFds);
         }
 
-        onsen_free(pEntry);
+        onsen_free(entry);
     }
 }

@@ -41,14 +41,14 @@
 typedef struct _OnsenArchiveEntry_s OnsenArchiveEntry_t;
 struct _OnsenArchiveEntry_s
 {
-    char *szFilename;                       /* Entry filename.                */
-    int iOffset;                            /* Entry file offset in archive.  */
-    int iSize;                              /* Entry full file size.          */
-    int iCompressedSize;                    /* Entry compressed file size.    */
-    int bEncrypted;                         /* Is file encrypted?             */
-    int bCompressed;                        /* Is file compressed?            */
-    char **a_szAddlFds;                     /* Additional fields.             */
-    int iAddlFdsCount;                      /* Additional fields count.       */
+    char *filename;                         /* Entry filename.                */
+    int offset;                             /* Entry file offset in archive.  */
+    int size;                               /* Entry full file size.          */
+    int compressedSize;                     /* Entry compressed file size.    */
+    int isEncrypted;                        /* Is file encrypted?             */
+    int isCompressed;                       /* Is file compressed?            */
+    char **addlFds;                         /* Additional fields.             */
+    int addlFdsCount;                       /* Additional fields count.       */
 };
 
 OnsenArchiveEntry_t *onsen_new_archive_entry();

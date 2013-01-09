@@ -37,7 +37,6 @@
 #define __ONSEN_STRING_UTILS_H
 
 #include "utils.h"
-#include <libgen.h>
 
 char *onsen_build_filename(const char *, const char *);
 char *onsen_build_filename_with_extension(const char *,

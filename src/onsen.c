@@ -38,10 +38,10 @@
 int onsen_verbosity = 0;
 
 void
-onsen_init(int iVerbosity)
+onsen_init(int verbosity)
 {
-    if (1 <= iVerbosity) {
-        onsen_verbosity = iVerbosity;
+    if (1 <= verbosity) {
+        onsen_verbosity = verbosity;
     }
     onsen_out_ok("Using libonsen v%d.%d%s ♨",
                   ONSEN_VERSION_MAJOR,

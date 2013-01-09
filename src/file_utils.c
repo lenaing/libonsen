@@ -36,158 +36,157 @@
 #include "file_utils.h"
 
 OnsenFile_t *
-onsen_new_disk_file(const char *szFilename, OnsenFileMode eMode,
-                        long lFileSize)
+onsen_new_disk_file(const char *filename, OnsenFileMode mode,
+                        long fileSize)
 {
-    OnsenFile_t *pDiskFile;
+    OnsenFile_t *diskFile;
     int rc;
-    int bError = 0;
-    int bIsMmaped = 0;
-    int iFd;
-    int iMmapProto;
-    unsigned char *pData = NULL;
+    int error = 0;
+    int isMmaped = 0;
+    int fd;
+    int mmapProto;
+    unsigned char *data = NULL;
 
-    switch (eMode) {
+    switch (mode) {
         case ONSEN_WRITE_ONLY : {
-            iFd = open(szFilename, O_RDWR|O_CREAT|O_TRUNC, 0644);
+            fd = open(filename, O_RDWR|O_CREAT|O_TRUNC, 0644);
         } break;
         case ONSEN_READ_ONLY :
         default : {
-            iFd = open(szFilename, O_RDONLY);
+            fd = open(filename, O_RDONLY);
         } break;
     }
 
-    if (-1 == iFd) {
+    if (-1 == fd) {
         perror("open");
-        onsen_err_ko("Failed to open file '%s'.\n", szFilename);
+        onsen_err_ko("Failed to open file '%s'.\n", filename);
         return NULL;
     }
 
-    switch (eMode) {
+    switch (mode) {
         case ONSEN_WRITE_ONLY : {
-            rc = pwrite(iFd, "", 1, lFileSize - 1);
+            rc = pwrite(fd, "", 1, fileSize - 1);
             if (-1 == rc) {
                 perror("pwrite");
                 onsen_err_ko("Failed to grow file '%s' to size %ld.\n",
-                                szFilename,
-                                lFileSize);
-                bError = 1;
+                                filename,
+                                fileSize);
+                error = 1;
             }
         } break;
         case ONSEN_READ_ONLY :
         default : {
-            lFileSize = lseek(iFd, 0, SEEK_END);
-            if (-1 == lFileSize) {
+            fileSize = lseek(fd, 0, SEEK_END);
+            if (-1 == fileSize) {
                 perror("lseek");
-                onsen_err_ko("Failed to get file size of '%s'.\n", szFilename);
-                bError = 1;
+                onsen_err_ko("Failed to get file size of '%s'.\n", filename);
+                error = 1;
             }
         } break;
     }
 
-    if (0 == bError) {
-        if (lFileSize <= ONSEN_MAX_MMAPED_FILE_SIZE) {
-            bIsMmaped = 1;
-            iMmapProto = (eMode == ONSEN_WRITE_ONLY) ? PROT_WRITE : PROT_READ;
-            pData = mmap(NULL, lFileSize, iMmapProto, MAP_SHARED, iFd, 0);
-            if (MAP_FAILED == pData) {
+    if (0 == error) {
+        if (fileSize <= ONSEN_MAX_MMAPED_FILE_SIZE) {
+            isMmaped = 1;
+            mmapProto = (mode == ONSEN_WRITE_ONLY) ? PROT_WRITE : PROT_READ;
+            data = mmap(NULL, fileSize, mmapProto, MAP_SHARED, fd, 0);
+            if (MAP_FAILED == data) {
                 perror("mmap");
-                onsen_err_ko("Failed to map file '%s' to memory.\n",
-                                szFilename);
-                bError = 1;
+                onsen_err_ko("Failed to map file '%s' to memory.\n", filename);
+                error = 1;
             }
         }
     }
 
-    if (bError) {
-        rc = close(iFd);
+    if (error) {
+        rc = close(fd);
         if (-1 == rc) {
             perror("close");
-            onsen_err_ko("Failed to close file '%s'.\n", szFilename);
+            onsen_err_ko("Failed to close file '%s'.\n", filename);
         }
         return NULL;
     }
 
-    pDiskFile = onsen_malloc(sizeof(OnsenFile_t));
-    pDiskFile->szFilename = onsen_strdup(szFilename);
-    pDiskFile->bIsMmaped  = bIsMmaped;
-    pDiskFile->iFd        = iFd;
-    pDiskFile->lFileSize  = lFileSize;
-    pDiskFile->pData      = pData;
-    return pDiskFile;
+    diskFile = onsen_malloc(sizeof(OnsenFile_t));
+    diskFile->filename = onsen_strdup(filename);
+    diskFile->isMmaped = isMmaped;
+    diskFile->fd       = fd;
+    diskFile->fileSize = fileSize;
+    diskFile->data     = data;
+    return diskFile;
 }
 
 void
-onsen_free_disk_file(OnsenFile_t *pDiskFile)
+onsen_free_disk_file(OnsenFile_t *diskFile)
 {
     int rc;
-    if (NULL != pDiskFile) {
+    if (NULL != diskFile) {
 
-        if (NULL != pDiskFile->pData) {
+        if (NULL != diskFile->data) {
             /* File was mmaped */
-            rc = munmap(pDiskFile->pData, pDiskFile->lFileSize);
+            rc = munmap(diskFile->data, diskFile->fileSize);
             if (-1 == rc) {
                 perror("munmap");
                 onsen_err_ko("Failed to unmap file '%s' from memory.\n",
-                                pDiskFile->szFilename);
+                                diskFile->filename);
             }
         }
 
-        rc = close(pDiskFile->iFd);
+        rc = close(diskFile->fd);
         if (-1 == rc) {
             perror("close");
-            onsen_err_ko("Failed to close file '%s'.\n", pDiskFile->szFilename);
+            onsen_err_ko("Failed to close file '%s'.\n", diskFile->filename);
         }
 
-        onsen_free(pDiskFile->szFilename);
-        free(pDiskFile);
+        onsen_free(diskFile->filename);
+        free(diskFile);
     }
 }
 
-int onsen_mkdir(const char *szPath)
+int onsen_mkdir(const char *path)
 {
-    char aBuffer[256];
-    char *p_aBuffer;
-    char *szFailure = "Failed to create directory '%s'.";
+    char buffer[256];
+    char *pBuffer;
+    char *failure = "Failed to create directory '%s'.";
     size_t len;
     int n;
     int rc = 0;
 
-    assert(NULL != szPath);
+    assert(NULL != path);
 
-    n = sizeof(aBuffer);
-    strncpy(aBuffer, szPath, n);
+    n = sizeof(buffer);
+    strncpy(buffer, path, n);
     if (n > 0) {
-        aBuffer[n - 1] = '\0';
+        buffer[n - 1] = '\0';
     }
-    len = strlen(aBuffer);
+    len = strlen(buffer);
 
-    if (aBuffer[len - 1] == '/') {
-        aBuffer[len - 1] = '\0';
+    if (buffer[len - 1] == '/') {
+        buffer[len - 1] = '\0';
     }
 
-    for (p_aBuffer = aBuffer; *p_aBuffer; p_aBuffer++) {
-        if (*p_aBuffer == '/') {
+    for (pBuffer = buffer; *pBuffer; pBuffer++) {
+        if (*pBuffer == '/') {
 
-            *p_aBuffer = '\0';
+            *pBuffer = '\0';
 
-            if (strcmp("", aBuffer)) {
-                rc = mkdir(aBuffer, S_IRWXU);
+            if (strcmp("", buffer)) {
+                rc = mkdir(buffer, S_IRWXU);
                 if (-1 == rc && EEXIST != errno) {
                     perror("mkdir");
-                    onsen_err_ko(szFailure, aBuffer);
+                    onsen_err_ko(failure, buffer);
                     return 0;
                 }
             }
 
-            *p_aBuffer = '/';
+            *pBuffer = '/';
         }
     }
 
-    rc = mkdir(aBuffer, S_IRWXU);
+    rc = mkdir(buffer, S_IRWXU);
     if (-1 == rc && EEXIST != errno) {
         perror("mkdir");
-        onsen_err_ko(szFailure, aBuffer);
+        onsen_err_ko(failure, buffer);
         return 0;
     }
 

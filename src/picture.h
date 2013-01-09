@@ -41,16 +41,16 @@
 typedef struct _OnsenDIBHeader_s OnsenDIBHeader_t;
 struct _OnsenDIBHeader_s
 {
-    int32_t  iBmpWidth;
-    int32_t  iBmpHeight;
-    uint16_t iNbColorPlanes;
-    uint16_t iNbBitsPerPixel;
-    uint32_t iCompressionType;
-    uint32_t iBmpSize;
-    int32_t  iHorizontalRes;
-    int32_t  iVerticalRes;
-    uint32_t iNbColorsInColorPalette;
-    uint32_t iNbImportantColors;
+    int32_t  bmpWidth;
+    int32_t  bmpHeight;
+    uint16_t nbColorPlanes;
+    uint16_t nbBitsPerPixel;
+    uint32_t compressionType;
+    uint32_t bmpSize;
+    int32_t  horizontalRes;
+    int32_t  verticalRes;
+    uint32_t nbColorsInColorPalette;
+    uint32_t nbImportantColors;
     /* TODO　Bitfields */
     /* TODO  Color spaces */
 };
@@ -58,8 +58,8 @@ struct _OnsenDIBHeader_s
 typedef struct _OnsenPictureInfo_s OnsenPictureInfo_t;
 struct _OnsenPictureInfo_s
 {
-    OnsenDIBHeader_t *pDIBHeader;
-    char **a_cColorMap;
+    OnsenDIBHeader_t *DIBHeader;
+    char **colorMap;
 };
 
 OnsenDIBHeader_t *onsen_new_dib_header();
