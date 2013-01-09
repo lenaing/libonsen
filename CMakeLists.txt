@@ -48,11 +48,9 @@ SET(
         src/archive_plugin.c
         src/encodings.c
         src/file_utils.c
-        src/iconv_utils.c
         src/picture.c
         src/picture_importer_plugin.c
         src/plugin.c
-        src/shift_jis_utils.c
         src/string_utils.c
         src/utils.c
 )
@@ -68,11 +66,9 @@ SET(
         src/encodings.h
         src/file_utils.h
         src/globals.h
-        src/iconv_utils.h
         src/picture.h
         src/picture_importer_plugin.h
         src/plugin.h
-        src/shift_jis_utils.h
         src/string_utils.h
         src/utils.h
         src/verbosity.h
