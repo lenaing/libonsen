@@ -50,6 +50,7 @@ SET(
         src/file_utils.c
         src/picture.c
         src/picture_importer_plugin.c
+        src/picture_exporter_plugin.c
         src/plugin.c
         src/string_utils.c
         src/utils.c
@@ -68,6 +69,7 @@ SET(
         src/globals.h
         src/picture.h
         src/picture_importer_plugin.h
+        src/picture_exporter_plugin.h
         src/plugin.h
         src/string_utils.h
         src/utils.h

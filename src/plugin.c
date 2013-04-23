@@ -35,6 +35,7 @@
  */
 #include "plugin.h"
 #include "archive_plugin.h"
+#include "picture_exporter_plugin.h"
 #include "picture_importer_plugin.h"
 
 OnsenPlugin_t *
@@ -117,7 +118,7 @@ onsen_load_plugin(OnsenPlugin_t *plugin, const char *libFilename)
     memcpy(&(plugin->getPluginInfo), &fun, sizeof(plugin->getPluginInfo));
 
     /* Check plugin API version */
-    if(plugin->getPluginInfo(0, api, 4)) {
+    if (plugin->getPluginInfo(0, api, 4)) {
 
         /* Check API version used */
         if ((api[0] != ONSEN_API_MAJOR) || (api[1] != ONSEN_API_MINOR)) {
@@ -300,7 +301,20 @@ onsen_new_plugin_instance(OnsenPlugin_t *plugin)
                 return 1;
             }
         } break;
-
+        case ONSEN_PLUGIN_PICTURE_EXPORTER : {
+            instance = onsen_new_picture_exporter_plugin();
+            if (NULL == instance) {
+                onsen_err_ko("Failed to instantiate plugin...");
+                return 1;
+            }
+            plugin->instance = instance;
+            rc = onsen_picture_exporter_plugin_load_funcs(plugin);
+            if (0 != rc) {
+                onsen_err_ko("Failed to load mandatory functions...");
+                onsen_free_picture_exporter_plugin(instance);
+                return 1;
+            }
+        } break;
         default : {
             onsen_err_ko("Can't instantiate unknow plugin type '%c'...",
                          plugin->type);
@@ -324,6 +338,9 @@ onsen_free_plugin_instance(OnsenPlugin_t *plugin)
             } break;
             case ONSEN_PLUGIN_PICTURE_IMPORTER : {
                 onsen_free_picture_importer_plugin(plugin->instance);
+            } break;
+            case ONSEN_PLUGIN_PICTURE_EXPORTER : {
+                onsen_free_picture_exporter_plugin(plugin->instance);
             } break;
             default : {
                 /* Should never happen. */

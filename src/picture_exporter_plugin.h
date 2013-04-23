@@ -33,26 +33,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#ifndef __ONSEN_PICTURE_IMPORTER_PLUGIN_H
-#define __ONSEN_PICTURE_IMPORTER_PLUGIN_H
+#ifndef __ONSEN_PICTURE_EXPORTER_PLUGIN_H
+#define __ONSEN_PICTURE_EXPORTER_PLUGIN_H
 
 #include "plugin.h"
 #include "picture.h"
 
-typedef struct _OnsenPictureImporterPlugin_s OnsenPictureImporterPlugin_t;
-struct _OnsenPictureImporterPlugin_s
+typedef struct _OnsenPictureExporterPlugin_s OnsenPictureExporterPlugin_t;
+struct _OnsenPictureExporterPlugin_s
 {
-    /* Mandatory picture importer functions.        */
-    int (*getPictureInfo)(int, long, long, char *, void *, OnsenPictureInfo_t *);
-    int (*getPicture)(int, long, long, char *, void *, OnsenPicture_t *);
+    /* Mandatory picture Exporter functions.        */
+    int (*exportPicture)(char *, OnsenPicture_t *);
 };
 
-OnsenPictureImporterPlugin_t *onsen_new_picture_importer_plugin(void);
-void onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
+OnsenPictureExporterPlugin_t *onsen_new_picture_exporter_plugin(void);
+void onsen_free_picture_exporter_plugin(OnsenPictureExporterPlugin_t *);
 
-int onsen_load_picture_importer_plugin(OnsenPictureImporterPlugin_t *,
+int onsen_load_picture_exporter_plugin(OnsenPictureExporterPlugin_t *,
                                         const char *);
-int onsen_unload_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
-int onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *);
+int onsen_unload_picture_exporter_plugin(OnsenPictureExporterPlugin_t *);
+int onsen_picture_exporter_plugin_load_funcs(OnsenPlugin_t *);
 
-#endif /* __ONSEN_PICTURE_IMPORTER_PLUGIN_H */
+#endif /* __ONSEN_PICTURE_Exporter_PLUGIN_H */

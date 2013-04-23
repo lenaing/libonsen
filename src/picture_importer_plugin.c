@@ -42,6 +42,7 @@ onsen_new_picture_importer_plugin()
 
     plugin = onsen_malloc(sizeof(OnsenPictureImporterPlugin_t));
     plugin->getPictureInfo = NULL;
+    plugin->getPicture = NULL;
 
     return plugin;
 }
@@ -82,6 +83,14 @@ onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *plugin)
     }
     memcpy(&(instance->getPictureInfo), &fun,
                 sizeof(instance->getPictureInfo));
+
+    fun = dlsym(plugin->library, "onsen_get_picture");
+    plugin->libraryError = dlerror();
+    if (NULL != plugin->libraryError) {
+        return 3;
+    }
+    memcpy(&(instance->getPicture), &fun,
+                sizeof(instance->getPicture));
 
     return 0;
 }

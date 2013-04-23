@@ -38,6 +38,15 @@
 
 #include "utils.h"
 
+typedef struct _OnsenRGBAQuad_s OnsenRGBAQuad_t;
+struct _OnsenRGBAQuad_s
+{
+    unsigned char red;
+    unsigned char green;
+    unsigned char blue;
+    unsigned char alpha;
+};
+
 typedef struct _OnsenDIBHeader_s OnsenDIBHeader_t;
 struct _OnsenDIBHeader_s
 {
@@ -51,15 +60,21 @@ struct _OnsenDIBHeader_s
     int32_t  verticalRes;
     uint32_t nbColorsInColorPalette;
     uint32_t nbImportantColors;
-    /* TODO　Bitfields */
-    /* TODO  Color spaces */
+    OnsenRGBAQuad_t **RGBABitmask;
 };
 
 typedef struct _OnsenPictureInfo_s OnsenPictureInfo_t;
 struct _OnsenPictureInfo_s
 {
     OnsenDIBHeader_t *DIBHeader;
-    char **colorMap;
+};
+
+typedef struct _OnsenPicture_s OnsenPicture_t;
+struct _OnsenPicture_s
+{
+    OnsenDIBHeader_t *DIBHeader;
+    OnsenRGBAQuad_t **colorMap;
+    unsigned char *pixels;
 };
 
 OnsenDIBHeader_t *onsen_new_dib_header();
@@ -67,5 +82,8 @@ void onsen_free_dib_header(OnsenDIBHeader_t *);
 
 OnsenPictureInfo_t *onsen_new_picture_info();
 void onsen_free_picture_info(OnsenPictureInfo_t *);
+
+OnsenPicture_t *onsen_new_picture();
+void onsen_free_picture(OnsenPicture_t *);
 
 #endif /* __ONSEN_PICTURE_H */

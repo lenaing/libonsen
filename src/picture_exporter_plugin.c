@@ -33,26 +33,55 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-#ifndef __ONSEN_PICTURE_IMPORTER_PLUGIN_H
-#define __ONSEN_PICTURE_IMPORTER_PLUGIN_H
+#include "picture_exporter_plugin.h"
 
-#include "plugin.h"
-#include "picture.h"
-
-typedef struct _OnsenPictureImporterPlugin_s OnsenPictureImporterPlugin_t;
-struct _OnsenPictureImporterPlugin_s
+OnsenPictureExporterPlugin_t *
+onsen_new_picture_exporter_plugin()
 {
-    /* Mandatory picture importer functions.        */
-    int (*getPictureInfo)(int, long, long, char *, void *, OnsenPictureInfo_t *);
-    int (*getPicture)(int, long, long, char *, void *, OnsenPicture_t *);
-};
+    OnsenPictureExporterPlugin_t *plugin;
 
-OnsenPictureImporterPlugin_t *onsen_new_picture_importer_plugin(void);
-void onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
+    plugin = onsen_malloc(sizeof(OnsenPictureExporterPlugin_t));
+    plugin->exportPicture = NULL;
 
-int onsen_load_picture_importer_plugin(OnsenPictureImporterPlugin_t *,
-                                        const char *);
-int onsen_unload_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
-int onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *);
+    return plugin;
+}
 
-#endif /* __ONSEN_PICTURE_IMPORTER_PLUGIN_H */
+void
+onsen_free_picture_exporter_plugin(OnsenPictureExporterPlugin_t *plugin)
+{
+    assert(NULL != plugin);
+
+    if (NULL != plugin) {
+        onsen_free(plugin);
+    }
+}
+
+int
+onsen_picture_exporter_plugin_load_funcs(OnsenPlugin_t *plugin)
+{
+    void *fun;
+    OnsenPictureExporterPlugin_t *instance;
+
+    assert(NULL != plugin);
+
+    /* Library already loaded. */
+    if (plugin->isLibraryLoaded) {
+        onsen_err_warning("Plugin %s already loaded.", plugin->name);
+        return 0;
+    }
+
+    instance = plugin->instance;
+    if (NULL == instance) {
+        return 1;
+    }
+
+    fun = dlsym(plugin->library, "onsen_export_picture");
+    plugin->libraryError = dlerror();
+    if (NULL != plugin->libraryError) {
+        return 2;
+    }
+    memcpy(&(instance->exportPicture), &fun,
+                sizeof(instance->exportPicture));
+
+    return 0;
+}
