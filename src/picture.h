@@ -50,17 +50,17 @@ struct _OnsenRGBAQuad_s
 typedef struct _OnsenDIBHeader_s OnsenDIBHeader_t;
 struct _OnsenDIBHeader_s
 {
-    int32_t  bmpWidth;
-    int32_t  bmpHeight;
-    uint16_t nbColorPlanes;
-    uint16_t nbBitsPerPixel;
-    uint32_t compressionType;
-    uint32_t bmpSize;
-    int32_t  horizontalRes;
-    int32_t  verticalRes;
-    uint32_t nbColorsInColorPalette;
-    uint32_t nbImportantColors;
-    OnsenRGBAQuad_t **RGBABitmask;
+    int32_t             bmpWidth;
+    int32_t             bmpHeight;
+    uint16_t            nbColorPlanes;
+    uint16_t            nbBitsPerPixel;
+    uint32_t            compressionType;
+    uint32_t            bmpSize;
+    int32_t             horizontalRes;
+    int32_t             verticalRes;
+    uint32_t            nbColorsInColorPalette;
+    uint32_t            nbImportantColors;
+    OnsenRGBAQuad_t   **RGBABitmask;
 };
 
 typedef struct _OnsenPictureInfo_s OnsenPictureInfo_t;
@@ -74,7 +74,7 @@ struct _OnsenPicture_s
 {
     OnsenDIBHeader_t *DIBHeader;
     OnsenRGBAQuad_t **colorMap;
-    unsigned char *pixels;
+    unsigned char    *pixels;
 };
 
 OnsenDIBHeader_t *onsen_new_dib_header();

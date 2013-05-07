@@ -42,16 +42,16 @@
 typedef struct _OnsenPictureExporterPlugin_s OnsenPictureExporterPlugin_t;
 struct _OnsenPictureExporterPlugin_s
 {
-    /* Mandatory picture Exporter functions.        */
+    /* Mandatory picture Exporter functions. */
     int (*exportPicture)(char *, OnsenPicture_t *);
 };
 
 OnsenPictureExporterPlugin_t *onsen_new_picture_exporter_plugin(void);
 void onsen_free_picture_exporter_plugin(OnsenPictureExporterPlugin_t *);
 
-int onsen_load_picture_exporter_plugin(OnsenPictureExporterPlugin_t *,
+int  onsen_load_picture_exporter_plugin(OnsenPictureExporterPlugin_t *,
                                         const char *);
-int onsen_unload_picture_exporter_plugin(OnsenPictureExporterPlugin_t *);
-int onsen_picture_exporter_plugin_load_funcs(OnsenPlugin_t *);
+int  onsen_unload_picture_exporter_plugin(OnsenPictureExporterPlugin_t *);
+int  onsen_picture_exporter_plugin_load_funcs(OnsenPlugin_t *);
 
 #endif /* __ONSEN_PICTURE_Exporter_PLUGIN_H */

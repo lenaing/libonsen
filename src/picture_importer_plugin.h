@@ -42,17 +42,18 @@
 typedef struct _OnsenPictureImporterPlugin_s OnsenPictureImporterPlugin_t;
 struct _OnsenPictureImporterPlugin_s
 {
-    /* Mandatory picture importer functions.        */
-    int (*getPictureInfo)(int, long, long, char *, void *, OnsenPictureInfo_t *);
+    /* Mandatory picture importer functions. */
+    int (*getPictureInfo)(int, long, long, char *, void *,
+                            OnsenPictureInfo_t *);
     int (*getPicture)(int, long, long, char *, void *, OnsenPicture_t *);
 };
 
 OnsenPictureImporterPlugin_t *onsen_new_picture_importer_plugin(void);
 void onsen_free_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
 
-int onsen_load_picture_importer_plugin(OnsenPictureImporterPlugin_t *,
+int  onsen_load_picture_importer_plugin(OnsenPictureImporterPlugin_t *,
                                         const char *);
-int onsen_unload_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
-int onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *);
+int  onsen_unload_picture_importer_plugin(OnsenPictureImporterPlugin_t *);
+int  onsen_picture_importer_plugin_load_funcs(OnsenPlugin_t *);
 
 #endif /* __ONSEN_PICTURE_IMPORTER_PLUGIN_H */

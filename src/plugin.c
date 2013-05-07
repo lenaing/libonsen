@@ -269,6 +269,7 @@ onsen_new_plugin_instance(OnsenPlugin_t *plugin)
 {
     void *instance;
     int rc;
+    int result = 0;
 
     assert(NULL != plugin);
 
@@ -276,43 +277,43 @@ onsen_new_plugin_instance(OnsenPlugin_t *plugin)
         case ONSEN_PLUGIN_ARCHIVE : {
             instance = onsen_new_archive_plugin();
             if (NULL == instance) {
-                onsen_err_ko("Failed to instantiate plugin...");
-                return 1;
-            }
-            plugin->instance = instance;
-            rc = onsen_archive_plugin_load_funcs(plugin);
-            if (0 != rc) {
-                onsen_err_ko("Failed to load mandatory functions...");
-                onsen_free_archive_plugin(instance);
-                return 1;
+                result = 1;
+            } else {
+                plugin->instance = instance;
+
+                rc = onsen_archive_plugin_load_funcs(plugin);
+                if (0 != rc) {
+                    onsen_free_archive_plugin(instance);
+                    result = 2;
+                }
             }
         } break;
         case ONSEN_PLUGIN_PICTURE_IMPORTER : {
             instance = onsen_new_picture_importer_plugin();
             if (NULL == instance) {
-                onsen_err_ko("Failed to instantiate plugin...");
-                return 1;
-            }
-            plugin->instance = instance;
-            rc = onsen_picture_importer_plugin_load_funcs(plugin);
-            if (0 != rc) {
-                onsen_err_ko("Failed to load mandatory functions...");
-                onsen_free_picture_importer_plugin(instance);
-                return 1;
+                result = 1;
+            } else {
+                plugin->instance = instance;
+
+                rc = onsen_picture_importer_plugin_load_funcs(plugin);
+                if (0 != rc) {
+                    onsen_free_picture_importer_plugin(instance);
+                    result = 2;
+                }
             }
         } break;
         case ONSEN_PLUGIN_PICTURE_EXPORTER : {
             instance = onsen_new_picture_exporter_plugin();
             if (NULL == instance) {
-                onsen_err_ko("Failed to instantiate plugin...");
-                return 1;
-            }
-            plugin->instance = instance;
-            rc = onsen_picture_exporter_plugin_load_funcs(plugin);
-            if (0 != rc) {
-                onsen_err_ko("Failed to load mandatory functions...");
-                onsen_free_picture_exporter_plugin(instance);
-                return 1;
+                result = 1; 
+            } else {
+                plugin->instance = instance;
+
+                rc = onsen_picture_exporter_plugin_load_funcs(plugin);
+                if (0 != rc) {
+                    onsen_free_picture_exporter_plugin(instance);
+                    result = 2;
+                }
             }
         } break;
         default : {
@@ -320,6 +321,15 @@ onsen_new_plugin_instance(OnsenPlugin_t *plugin)
                          plugin->type);
             return 1;
         }
+    }
+
+    if (0 != result) {
+        if (1 == result) {
+            onsen_err_ko("Failed to instantiate plugin...");
+        } else {
+            onsen_err_ko("Failed to load mandatory functions...");
+        }
+        return 1;
     }
 
     return 0;

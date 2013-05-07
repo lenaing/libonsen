@@ -80,8 +80,7 @@ onsen_picture_exporter_plugin_load_funcs(OnsenPlugin_t *plugin)
     if (NULL != plugin->libraryError) {
         return 2;
     }
-    memcpy(&(instance->exportPicture), &fun,
-                sizeof(instance->exportPicture));
+    memcpy(&(instance->exportPicture), &fun, sizeof(instance->exportPicture));
 
     return 0;
 }
