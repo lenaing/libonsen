@@ -107,12 +107,12 @@ onsen_write_file_raw(int srcType, void *srcFile, long srcOffset,
                  int dstType, void *dstFile, long dstFileSize,
                  OnsenWriteFileCallback callback, void *data)
 {
-    OnsenFile_t *dstDiskFile;
+    OnsenFile_t *dstDiskFile = NULL;
     int i = 0;
     int error = 1;
     int nbBytesRead = 0;
     int nbBytesToCopy = 0;
-    int srcFd;
+    int srcFd = 0;
     int rc;
     long offset;
     unsigned char *srcData = NULL;
