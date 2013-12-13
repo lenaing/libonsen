@@ -36,7 +36,7 @@
 #ifndef __ONSEN_H
 #define __ONSEN_H
 
-#include "config.h"
+#include "version.h"
 #include "utils.h"
 
 void onsen_init();

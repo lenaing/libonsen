@@ -34,60 +34,39 @@
 # knowledge of the CeCILL-C license and that you accept its terms.
 #
 
-# CMake requirements
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+AC_INIT([libonsen], [0.2], [lenaing@gmail.com])
+AC_PREREQ([2.69])
+AC_CONFIG_SRCDIR([src/onsen.c])
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE
 
-# libonsen ---------------------------------------------------------------------
-PROJECT(LibOnsen)
+dnl --------------------------------------------
+dnl Versioning
+dnl --------------------------------------------
+ONSEN_VERSION_MAJOR=0
+ONSEN_VERSION_MINOR=2
+ONSEN_VERSION_RELEASE=b
+AC_SUBST(ONSEN_VERSION_MAJOR)
+AC_SUBST(ONSEN_VERSION_MINOR)
+AC_SUBST(ONSEN_VERSION_RELEASE)
 
-SET(
-    libonsen_SRCS
-        src/onsen.c
-        src/archive_entry.c
-        src/archive_info.c
-        src/archive_plugin.c
-        src/encodings.c
-        src/file_utils.c
-        src/picture.c
-        src/picture_importer_plugin.c
-        src/picture_exporter_plugin.c
-        src/plugin.c
-        src/string_utils.c
-        src/utils.c
-)
+dnl Checks for programs
+dnl --------------------------------------------
+AC_PROG_CC
+AC_PROG_CC_C_O
+AC_PROG_RANLIB
 
-SET(
-    libonsen_INCS
-        src/onsen.h
-        src/archive_entry.h
-        src/archive_info.h
-        src/archive_plugin.h
-        src/config.h
-        src/constants.h
-        src/encodings.h
-        src/file_utils.h
-        src/globals.h
-        src/picture.h
-        src/picture_importer_plugin.h
-        src/picture_exporter_plugin.h
-        src/plugin.h
-        src/string_utils.h
-        src/utils.h
-        src/verbosity.h
-)
+PKG_PROG_PKG_CONFIG
 
-SET(ONSEN_VERSION_MAJOR 0)
-SET(ONSEN_VERSION_MINOR 2)
-SET(ONSEN_VERSION_RELEASE "a")
 
-CONFIGURE_FILE(
-    "${PROJECT_SOURCE_DIR}/src/config.h.in"
-    "${PROJECT_SOURCE_DIR}/src/config.h"
-)
-
-ADD_DEFINITIONS(-W -Wall -ansi -pedantic -fPIC -g3)
-ADD_LIBRARY(onsen STATIC ${libonsen_SRCS})
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
-
-INSTALL(FILES ${libonsen_INCS} DESTINATION "include/libonsen")
-INSTALL(TARGETS onsen DESTINATION lib)
+dnl --------------------------------------------
+dnl Output files
+dnl --------------------------------------------
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([
+    Makefile
+    src/Makefile
+    src/version.h
+])
+AC_OUTPUT

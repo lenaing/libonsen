@@ -43,7 +43,7 @@ onsen_init(int verbosity)
     if (1 <= verbosity) {
         onsen_verbosity = verbosity;
     }
-    onsen_out_ok("Using libonsen v%d.%d%s ♨",
+    onsen_out_ok("Using libonsen v%s.%s%s ♨",
                   ONSEN_VERSION_MAJOR,
                   ONSEN_VERSION_MINOR,
                   ONSEN_VERSION_RELEASE);
