@@ -4,7 +4,6 @@ aclocal.m4
 autom4te.cache/
 config.h.in
 config.h.in~
-configure
 src/Makefile.in
 src/version.h
 INSTALL

@@ -37,22 +37,18 @@ lib_LIBRARIES = libonsen.a
 
 libonsen_a_CFLAGS = -W -Wall -ansi -pedantic -fPIC -g3
 libonsen_a_SOURCES = \
-    archive_entry.c archive_entry.h \
-    archive_info.c archive_info.h \
-    archive_plugin.c archive_plugin.h \
-    constants.h \
+    archive_entry.c \
+    archive_info.c \
+    archive_plugin.c \
     encodings.c encodings.h \
-    file_utils.c file_utils.h \
-    globals.h \
-    onsen.c onsen.h \
-    picture.c picture.h \
-    picture_exporter_plugin.c picture_exporter_plugin.h \
-    picture_importer_plugin.c picture_importer_plugin.h \
-    plugin.c plugin.h \
-    string_utils.c string_utils.h \
-    utils.c utils.h \
-    version.h.in \
-    verbosity.h
+    file_utils.c \
+    onsen.c \
+    picture.c \
+    picture_exporter_plugin.c \
+    picture_importer_plugin.c \
+    plugin.c \
+    string_utils.c \
+    utils.c
 
 includelibonsendir = $(includedir)/libonsen
 includelibonsen_HEADERS = \
