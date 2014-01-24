@@ -34,27 +34,31 @@
 # knowledge of the CeCILL-C license and that you accept its terms.
 #
 
-AC_INIT([libonsen], [0.3], [lenaing@gmail.com])
+AC_INIT([libonsen], [0.2], [lenaing@gmail.com])
 AC_PREREQ([2.69])
 AC_CONFIG_SRCDIR([src/onsen.c])
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 
 dnl --------------------------------------------
 dnl Versioning
 dnl --------------------------------------------
 ONSEN_VERSION_MAJOR=0
-ONSEN_VERSION_MINOR=3
+ONSEN_VERSION_MINOR=2
 ONSEN_VERSION_RELEASE=b
 AC_SUBST(ONSEN_VERSION_MAJOR)
 AC_SUBST(ONSEN_VERSION_MINOR)
 AC_SUBST(ONSEN_VERSION_RELEASE)
 
-dnl --------------------------------------------
 dnl Checks for programs
 dnl --------------------------------------------
 AC_PROG_CC
+AC_PROG_CC_C_O
 AC_PROG_RANLIB
+
+PKG_PROG_PKG_CONFIG
+
 
 dnl --------------------------------------------
 dnl Output files
